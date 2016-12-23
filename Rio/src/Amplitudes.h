@@ -80,9 +80,8 @@ void Amplitudes(int &final_state,
 	//////////////////////////////////////////////////////////////     
 	if (resonances.at(0) == 1) {
 
-		//if (reading_ntuple == 1) cout << "Begin - K*(892)" << endl;
-		m_0 = res_masses[size_resonances];
-		w_0 = res_widths[size_resonances];
+		m_0 = GLOBAL_TOY? resonant_channel_mass[0]:res_masses[size_resonances];
+		w_0 = GLOBAL_TOY? resonant_channel_width[0]:res_widths[size_resonances];
 		spin = 1;
 
 		// Blatt-Weisskopf form factors
@@ -113,9 +112,8 @@ void Amplitudes(int &final_state,
 	////////////////////////////////////////////////////////////     
 	if (resonances.at(1) == 1) {
 
-		//if (reading_ntuple == 1) cout << "Begin - K*(1430)" << endl;
-		m_0 = res_masses[size_resonances];
-		w_0 = res_widths[size_resonances];
+		m_0 = GLOBAL_TOY? resonant_channel_mass[1]:res_masses[size_resonances];
+		w_0 = GLOBAL_TOY? resonant_channel_width[1]:res_widths[size_resonances];
 		spin = 0;
 
 		gamma = Gamma(spin, m_0, w_0, m13, m1sq, m3sq);
@@ -129,8 +127,8 @@ void Amplitudes(int &final_state,
 	////////////////////////////////////////////////////////////     
 	if (resonances.at(2) == 1) {
 
-		m_0 = res_masses[size_resonances];
-		w_0 = res_widths[size_resonances];
+		m_0 = GLOBAL_TOY? resonant_channel_mass[2]:res_masses[size_resonances];
+		w_0 = GLOBAL_TOY? resonant_channel_width[2]:res_widths[size_resonances];
 		spin = 1;
 
 		// Blatt-Weisskopf form factors
@@ -158,8 +156,8 @@ void Amplitudes(int &final_state,
 	////////////////////////////////////////////////////////////     
 	if (resonances.at(3) == 1) {
 
-		m_0 = res_masses[size_resonances];
-		w_0 = res_widths[size_resonances];
+		m_0 = GLOBAL_TOY? resonant_channel_mass[3]:res_masses[size_resonances];
+		w_0 = GLOBAL_TOY? resonant_channel_width[3]:res_widths[size_resonances];
 		spin = 0;
 
 		// Mass-dependent width
@@ -174,8 +172,8 @@ void Amplitudes(int &final_state,
 	//   CALCULATING THE  D -> kappa K COMPLEX AMPLITUDE
 	////////////////////////////////////////////////////////////     
 	if (resonances.at(4) == 1) {
-		real = res_masses[size_resonances];
-		imaginary = res_widths[size_resonances];		
+		real      = GLOBAL_TOY? resonant_channel_mass[4]:res_masses[size_resonances];
+		imaginary = GLOBAL_TOY? resonant_channel_width[4]:res_widths[size_resonances];
 
 		sig.at(size_resonances) = Pole(s13, real, imaginary);
 		size_resonances++;
@@ -213,10 +211,10 @@ void Amplitudes(int &final_state,
 	//   D -> f0(980)(->KK) pi
 	////////////////////////////////////////////////////////////     
 	if (resonances.at(7) == 1) {
-		m_0 = res_masses[size_resonances];
-		w_0 = res_widths[size_resonances];
-		g_K = res_extra_pars[size_resonances][0];
-		g_pi = res_extra_pars[size_resonances][1];
+		m_0 = GLOBAL_TOY? resonant_channel_mass[7]:res_masses[size_resonances];
+		w_0 = GLOBAL_TOY? resonant_channel_width[7]:res_widths[size_resonances];
+		g_K  = GLOBAL_TOY? gpi :res_extra_pars[size_resonances][0];
+		g_pi = GLOBAL_TOY? gK  :res_extra_pars[size_resonances][1];
 		spin = 0;
 
 
@@ -231,8 +229,8 @@ void Amplitudes(int &final_state,
 	//   D -> f0(X)(->KK) pi
 	////////////////////////////////////////////////////////////     
 	if (resonances.at(8) == 1) {
-		m_0 = res_masses[size_resonances];
-		w_0 = res_widths[size_resonances];
+		m_0 = GLOBAL_TOY? resonant_channel_mass[8]:res_masses[size_resonances];
+		w_0 = GLOBAL_TOY? resonant_channel_width[8]:res_widths[size_resonances];
 		spin = 0;
 
 		// Mass-dependent width
@@ -248,8 +246,8 @@ void Amplitudes(int &final_state,
 	//   D -> K2(1430) K
 	////////////////////////////////////////////////////////////     
 	if (resonances.at(9) == 1) {
-		m_0 = res_masses[size_resonances];
-		w_0 = res_widths[size_resonances];
+		m_0 = GLOBAL_TOY? resonant_channel_mass[9]:res_masses[size_resonances];
+		w_0 = GLOBAL_TOY? resonant_channel_width[9]:res_widths[size_resonances];
 		spin = 2;
 		// Blatt-Weisskopf form factors
 
@@ -278,8 +276,8 @@ void Amplitudes(int &final_state,
 	////////////////////////////////////////////////////////////     
 	if (resonances.at(10) == 1) {
 
-		m_0 = res_masses[size_resonances];
-		w_0 = res_widths[size_resonances];
+		m_0 = GLOBAL_TOY? resonant_channel_mass[10]:res_masses[size_resonances];
+		w_0 = GLOBAL_TOY? resonant_channel_width[10]:res_widths[size_resonances];
 		spin = 1;
 
 		// Blatt-Weisskopf form factors
@@ -306,8 +304,8 @@ void Amplitudes(int &final_state,
 	//   CALCULATING THE  D -> kappa (BW) K COMPLEX AMPLITUDE
 	////////////////////////////////////////////////////////////     
 	if (resonances.at(11) == 1) {
-		m_0 = res_masses[size_resonances];
-		w_0 = res_widths[size_resonances];
+		m_0 = GLOBAL_TOY? resonant_channel_mass[11]:res_masses[size_resonances];
+		w_0 = GLOBAL_TOY? resonant_channel_width[11]:res_widths[size_resonances];
 		spin = 0;
 
 		// Complex amplitude for D -> K*(1430) K
@@ -318,8 +316,8 @@ void Amplitudes(int &final_state,
 	//   CALCULATING THE  D -> f0(1500) pi COMPLEX AMPLITUDE
 	////////////////////////////////////////////////////////////     
 	if (resonances.at(12) == 1) {
-		m_0 = res_masses[size_resonances];
-		w_0 = res_widths[size_resonances];
+		m_0 = GLOBAL_TOY? resonant_channel_mass[12]:res_masses[size_resonances];
+		w_0 = GLOBAL_TOY? resonant_channel_width[12]:res_widths[size_resonances];
 		spin = 0;
 
 		gamma = Gamma(spin, m_0, w_0, m12, m1sq, m2sq);
@@ -331,8 +329,8 @@ void Amplitudes(int &final_state,
 	//   D -> K1(1410) K
 	////////////////////////////////////////////////////////////     
 	if (resonances.at(13) == 1) {
-		m_0 = res_masses[size_resonances];
-		w_0 = res_widths[size_resonances];
+		m_0 = GLOBAL_TOY? resonant_channel_mass[13]:res_masses[size_resonances];
+		w_0 = GLOBAL_TOY? resonant_channel_width[13]:res_widths[size_resonances];
 		spin = 1;
 		// Blatt-Weisskopf form factors
 
@@ -361,8 +359,8 @@ void Amplitudes(int &final_state,
 	////////////////////////////////////////////////////////////     
 	if (resonances.at(14) == 1) {
 
-		m_0 = res_masses[size_resonances];
-		w_0 = res_widths[size_resonances];
+		m_0 = GLOBAL_TOY? resonant_channel_mass[14]:res_masses[size_resonances];
+		w_0 = GLOBAL_TOY? resonant_channel_width[14]:res_widths[size_resonances];
 		spin = 2;
 
 		// Blatt-Weisskopf form factors
@@ -390,8 +388,8 @@ void Amplitudes(int &final_state,
 	////////////////////////////////////////////////////////////     
 	if (resonances.at(15) == 1) {
 
-		m_0 = res_masses[size_resonances];
-		w_0 = res_widths[size_resonances];
+		m_0 = GLOBAL_TOY? resonant_channel_mass[15]:res_masses[size_resonances];
+		w_0 = GLOBAL_TOY? resonant_channel_width[15]:res_widths[size_resonances];
 		spin = 2;
 
 		// Blatt-Weisskopf form factors
@@ -419,8 +417,8 @@ void Amplitudes(int &final_state,
 	////////////////////////////////////////////////////////////     
 	if (resonances.at(16) == 1) {
 
-		m_0 = res_masses[size_resonances];
-		w_0 = res_widths[size_resonances];
+		m_0 = GLOBAL_TOY? resonant_channel_mass[16]:res_masses[size_resonances];
+		w_0 = GLOBAL_TOY? resonant_channel_width[16]:res_widths[size_resonances];
 		spin = 0;
 
 		gamma = Gamma(spin, m_0, w_0, m13, m1sq, m3sq);
@@ -433,8 +431,8 @@ void Amplitudes(int &final_state,
 	//   CALCULATING THE  D -> f0(1710) pi COMPLEX AMPLITUDE
 	////////////////////////////////////////////////////////////     
 	if (resonances.at(17) == 1) {
-		m_0 = res_masses[size_resonances];
-		w_0 = res_widths[size_resonances];
+		m_0 = GLOBAL_TOY? resonant_channel_mass[17]:res_masses[size_resonances];
+		w_0 = GLOBAL_TOY? resonant_channel_width[17]:res_widths[size_resonances];
 		spin = 0;
 
 		gamma = Gamma(spin, m_0, w_0, m12, m1sq, m2sq);
@@ -447,8 +445,8 @@ void Amplitudes(int &final_state,
 	////////////////////////////////////////////////////////////     
 	if (resonances.at(18) == 1) {
 
-		m_0 = res_masses[size_resonances];
-		w_0 = res_widths[size_resonances];
+		m_0 = GLOBAL_TOY? resonant_channel_mass[18]:res_masses[size_resonances];
+		w_0 = GLOBAL_TOY? resonant_channel_width[18]:res_widths[size_resonances];
 		spin = 2;
 
 		// Blatt-Weisskopf form factors
@@ -475,10 +473,11 @@ void Amplitudes(int &final_state,
 	//   CALCULATING THE  Magalhaes Kpi S-wave COMPLEX AMPLITUDE
 	////////////////////////////////////////////////////////////     
 	if (resonances.at(19) == 1) {
-		m_0 = res_masses[size_resonances];
-		w_0 = res_widths[size_resonances];
-		Cd = res_extra_pars[size_resonances][0];
-		Cm = res_extra_pars[size_resonances][1];
+		m_0 = GLOBAL_TOY? resonant_channel_mass[19]:res_masses[size_resonances];
+		w_0 = GLOBAL_TOY? resonant_channel_width[19]:res_widths[size_resonances];
+		Cd = GLOBAL_TOY? const_cd:res_extra_pars[size_resonances][0];
+		Cm = GLOBAL_TOY? const_cm:res_extra_pars[size_resonances][1];
+		
 		spin = 0;
 
 		sig.at(size_resonances) = Magalhaes(s13, m_0, Cd, Cm);
@@ -497,8 +496,8 @@ void Amplitudes(int &final_state,
 
 	if (resonances.at(20) == 1) {
 
-		m_0 = res_masses[size_resonances];
-		w_0 = res_widths[size_resonances];
+		m_0 = GLOBAL_TOY? resonant_channel_mass[20]:res_masses[size_resonances];
+		w_0 = GLOBAL_TOY? resonant_channel_width[20]:res_widths[size_resonances];
 
 		real_O = res_extra_pars[size_resonances][0];
 		imag_O = res_extra_pars[size_resonances][1];
@@ -554,10 +553,10 @@ void Amplitudes(int &final_state,
 	////////////////////////////////////////////////////////////     
 
 	if (resonances.at(21) == 1) {
-		m_0 = res_masses[size_resonances];
-		w_0 = res_widths[size_resonances];
-		g_K = res_extra_pars[size_resonances][0];
-		g_pi = res_extra_pars[size_resonances][1];
+		m_0 = GLOBAL_TOY? resonant_channel_mass[21]:res_masses[size_resonances];
+		w_0 = GLOBAL_TOY? resonant_channel_width[21]:res_widths[size_resonances];
+		g_K = GLOBAL_TOY? gK:res_extra_pars[size_resonances][0];
+		g_pi = GLOBAL_TOY? gpi:res_extra_pars[size_resonances][1];
 
 		sig12 = flatte(s12, m_0, g_K, g_pi);
 		sig13 = flatte(s13, m_0, g_K, g_pi);
@@ -570,8 +569,8 @@ void Amplitudes(int &final_state,
 	//   D -> f2(1270) pi
 	////////////////////////////////////////////////////////////     
 	if (resonances.at(22) == 1) {
-		m_0 = res_masses[size_resonances];
-		w_0 = res_widths[size_resonances];
+		m_0 = GLOBAL_TOY? resonant_channel_mass[22]:res_masses[size_resonances];
+		w_0 = GLOBAL_TOY? resonant_channel_width[22]:res_widths[size_resonances];
 		spin = 2;
 
 		// Blatt-Weisskopf form factors
@@ -621,8 +620,8 @@ void Amplitudes(int &final_state,
 	//   D -> rho(1450) pi
 	////////////////////////////////////////////////////////////     
 	if (resonances.at(23) == 1) {
-		m_0 = res_masses[size_resonances];
-		w_0 = res_widths[size_resonances];
+		m_0 = GLOBAL_TOY? resonant_channel_mass[23]:res_masses[size_resonances];
+		w_0 = GLOBAL_TOY? resonant_channel_width[23]:res_widths[size_resonances];
 		spin = 1;
 
 		// Blatt-Weisskopf form factors
@@ -672,8 +671,8 @@ void Amplitudes(int &final_state,
 	//   D -> f0(X) pi
 	////////////////////////////////////////////////////////////     
 	if (resonances.at(24) == 1) {
-		m_0 = res_masses[size_resonances];
-		w_0 = res_widths[size_resonances];
+		m_0 = GLOBAL_TOY? resonant_channel_mass[24]:res_masses[size_resonances];
+		w_0 = GLOBAL_TOY? resonant_channel_width[24]:res_widths[size_resonances];
 		spin = 0;
 
 
@@ -697,8 +696,8 @@ void Amplitudes(int &final_state,
 	////////////////////////////////////////////////////////////     
 	if (resonances.at(25) == 1) {
 		///usando BW0.560,    0.500
-		m_0 = res_masses[size_resonances];
-		w_0 = res_widths[size_resonances]; 
+		m_0 = GLOBAL_TOY? resonant_channel_mass[25]:res_masses[size_resonances];
+		w_0 = GLOBAL_TOY? resonant_channel_width[25]:res_widths[size_resonances];
 		spin = 0;
 
 		sig12 = sigma(s12);
@@ -747,8 +746,8 @@ void Amplitudes(int &final_state,
 	//   CALCULATING THE  D -> f0(1500) pi COMPLEX AMPLITUDE
 	////////////////////////////////////////////////////////////     
 	if (resonances.at(27) == 1) {
-		m_0 = res_masses[size_resonances];
-		w_0 = res_widths[size_resonances];
+		m_0 = GLOBAL_TOY? resonant_channel_mass[27]:res_masses[size_resonances];
+		w_0 = GLOBAL_TOY? resonant_channel_width[27]:res_widths[size_resonances];
 		spin = 0;
 
 		gamma = Gamma(spin, m_0, w_0, m12, m1sq, m2sq);
@@ -768,8 +767,8 @@ void Amplitudes(int &final_state,
 	//   SIGMA BW
 	////////////////////////////////////////////////////////////  
 	if (resonances.at(28) == 1) {
-		m_0 = res_masses[size_resonances];
-		w_0 = res_widths[size_resonances];
+		m_0 = GLOBAL_TOY? resonant_channel_mass[28]:res_masses[size_resonances];
+		w_0 = GLOBAL_TOY? resonant_channel_width[28]:res_widths[size_resonances];
 		spin = 0;
 
 
@@ -793,8 +792,8 @@ void Amplitudes(int &final_state,
 	//   F0(980) BW
 	////////////////////////////////////////////////////////////  
 	if (resonances.at(29) == 1) {
-		m_0 = res_masses[size_resonances];
-		w_0 = res_widths[size_resonances];
+		m_0 = GLOBAL_TOY? resonant_channel_mass[29]:res_masses[size_resonances];
+		w_0 = GLOBAL_TOY? resonant_channel_width[29]:res_widths[size_resonances];
 		spin = 0;
 
 
