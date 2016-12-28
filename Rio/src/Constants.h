@@ -310,7 +310,7 @@ double const resonant_channel_width[AVAILABLE_RESONANCES] = { // k k pi
 							     w0_K1430, 
 							     w0_phi, 
 							     w0_a0, 
-							     w0_kappa, 
+							     Imkappa, 
 						             100, 
 							     100, 
 							     w0_f0,

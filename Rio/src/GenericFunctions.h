@@ -637,7 +637,7 @@ double acceptance_sqDp( double s12, double s13 )
 	int s12Flaw = int( ( massprime - s12MinForAcc )*NBins12ForAcc / s12ExtForAcc ),
 	    s13Flaw = int( ( tprime - s13MinForAcc )*NBins13ForAcc / s13ExtForAcc );	 
 
-	double Acc = AccHist->GetBinContent( s12Flaw + 1, s13Flaw + 1 );
+	double Acc = AccHist->GetBinContent( s13Flaw + 1, s12Flaw + 1 );
 
 	return Acc;
 
@@ -648,7 +648,7 @@ double acceptance_Sij( double s12, double s13 ){
 
 	int s12Flaw = int( ( s12 - s12MinForAcc )*NBins12ForAcc / s12ExtForAcc ),
 	    s13Flaw = int( ( s13 - s13MinForAcc )*NBins13ForAcc / s13ExtForAcc );
-	double  Acc = AccHist->GetBinContent( s12Flaw + 1, s13Flaw + 1 );
+	double  Acc = AccHist->GetBinContent( s13Flaw + 1, s12Flaw + 1 );
 
 	return Acc;
 
@@ -658,7 +658,7 @@ double acceptance_Sij( double s12, double s13 ){
 double acceptance( double s12, double s13 )
 {
 
-	return acceptance_Sij( s13, s12 );
+	return acceptance_Sij( s12, s13 );
 
 }
 
