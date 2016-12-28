@@ -684,7 +684,7 @@ double backgroundF_sQ ( double s12, double s13 ){
 
 	int s12BFlaw = int(( massprime - s12MinForBack )*NBins12ForBack / s12ExtForBack );
 	int s13BFlaw = int(( tprime - s13MinForBack )*NBins13ForBack / s13ExtForBack );
-	double  Back = BackHist->GetBinContent( s12BFlaw + 1, s13BFlaw + 1 );
+	double  Back = BackHist->GetBinContent( s13BFlaw + 1, s12BFlaw + 1 );
 	return Back;
 }
 
@@ -694,7 +694,7 @@ double backgroundF_Sij ( double s12, double s13 ){
 
 	int s12BFlaw = int(( s12 - s12MinForBack )*NBins12ForBack / s12ExtForBack );
 	int s13BFlaw = int(( s13 - s13MinForBack )*NBins13ForBack / s13ExtForBack );
-	double 	Back = BackHist->GetBinContent( s12BFlaw + 1, s13BFlaw + 1 );
+	double 	Back = BackHist->GetBinContent( s13BFlaw + 1, s12BFlaw + 1 );
 
 	return Back;
 
@@ -704,7 +704,7 @@ double backgroundF_Sij ( double s12, double s13 ){
 double backgroundF( double s12, double s13 )
 {
 
-	return backgroundF_Sij( s13, s12 );
+	return backgroundF_Sij( s12, s13 );
 
 }
 
