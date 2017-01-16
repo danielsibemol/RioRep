@@ -16,16 +16,16 @@ void Read_Parameters(string input_txt_file_name, TFitter* minimizer, bool &real_
 	int available_bkg_components = AVAILABLE_BKG_COMPONENTS;
 	string str_coef1, str_coef1_lower_limit, str_coef1_upper_limit, str_coef1_fix, str_coef2, str_coef2_lower_limit, str_coef2_upper_limit, str_coef2_fix, str_fraction,
 	       str_fraction_lower_limit, str_fraction_upper_limit, str_fraction_fix, pwa_txt_file, pwa_coef1, pwa_coef2, str_res_mass, str_res_mass_lower_limit,
-	       str_res_mass_upper_limit, str_res_mass_fix, str_res_width, str_res_width_lower_limit, str_res_width_upper_limit, str_res_width_fix, str_res_extra_par_1, 
-	       str_res_extra_par_1_lower_limit, str_res_extra_par_1_upper_limit, str_res_extra_par_1_fix, str_res_extra_par_2, str_res_extra_par_2_lower_limit, 
-	       str_res_extra_par_2_upper_limit, str_res_extra_par_2_fix, str_res_extra_par_3, str_res_extra_par_3_lower_limit, str_res_extra_par_3_upper_limit, 
-	       str_res_extra_par_3_fix, str_res_extra_par_4, str_res_extra_par_4_lower_limit, str_res_extra_par_4_upper_limit, str_res_extra_par_4_fix;
-	int temp_coef1_fix, temp_coef2_fix, temp_mass_fix, temp_width_fix, temp_bkg_fix, temp_pwa_fix, temp_res_extra_par_1_fix, temp_res_extra_par_2_fix, temp_res_extra_par_3_fix, 
-	    temp_res_extra_par_4_fix;
+	       str_res_mass_upper_limit, str_res_mass_fix, str_res_width, str_res_width_lower_limit, str_res_width_upper_limit, str_res_width_fix, str_res_extra_par_0, 
+	       str_res_extra_par_0_lower_limit, str_res_extra_par_0_upper_limit, str_res_extra_par_0_fix, str_res_extra_par_1, str_res_extra_par_1_lower_limit, 
+	       str_res_extra_par_1_upper_limit, str_res_extra_par_1_fix, str_res_extra_par_2, str_res_extra_par_2_lower_limit, str_res_extra_par_2_upper_limit, 
+	       str_res_extra_par_2_fix, str_res_extra_par_3, str_res_extra_par_3_lower_limit, str_res_extra_par_3_upper_limit, str_res_extra_par_3_fix;
+	int temp_coef1_fix, temp_coef2_fix, temp_mass_fix, temp_width_fix, temp_bkg_fix, temp_pwa_fix, temp_res_extra_par_0_fix, temp_res_extra_par_1_fix, temp_res_extra_par_2_fix, 
+	    temp_res_extra_par_3_fix;
 	double temp_coef1, temp_coef2, temp_mass, temp_width, temp_bkg_coef, temp_coef1_lower_limit, temp_coef2_lower_limit, temp_coef1_upper_limit, temp_coef2_upper_limit, temp_mass_lower_limit,
-	       temp_mass_upper_limit, temp_width_lower_limit, temp_width_upper_limit, temp_mKK, temp_res_extra_par_1, temp_res_extra_par_1_upper_limit, temp_res_extra_par_1_lower_limit, 
-	       temp_res_extra_par_2, temp_res_extra_par_2_upper_limit, temp_res_extra_par_2_lower_limit, temp_res_extra_par_3, temp_res_extra_par_3_upper_limit, temp_res_extra_par_3_lower_limit, 
-	       temp_res_extra_par_4, temp_res_extra_par_4_upper_limit, temp_res_extra_par_4_lower_limit;
+	       temp_mass_upper_limit, temp_width_lower_limit, temp_width_upper_limit, temp_mKK, temp_res_extra_par_0, temp_res_extra_par_0_upper_limit, temp_res_extra_par_0_lower_limit, 
+	       temp_res_extra_par_1, temp_res_extra_par_1_upper_limit, temp_res_extra_par_1_lower_limit, temp_res_extra_par_2, temp_res_extra_par_2_upper_limit, temp_res_extra_par_2_lower_limit, 
+	       temp_res_extra_par_3, temp_res_extra_par_3_upper_limit, temp_res_extra_par_3_lower_limit;
 	TComplex temp_coef;
 
 	TEnv *input_txt_file = new TEnv(input_txt_file_name.c_str());
@@ -191,6 +191,14 @@ void Read_Parameters(string input_txt_file_name, TFitter* minimizer, bool &real_
 		str_res_width_fix = resonant_channel_string[i];
 		str_res_width_fix += "_width_fix" ;
 
+		str_res_extra_par_0 = resonant_channel_string[i];
+		str_res_extra_par_0 += "_res_extra_par_0";
+		str_res_extra_par_0_lower_limit = resonant_channel_string[i];
+		str_res_extra_par_0_lower_limit += "_res_extra_par_0_lower_limit";
+		str_res_extra_par_0_upper_limit = resonant_channel_string[i];
+		str_res_extra_par_0_upper_limit += "_res_extra_par_0_upper_limit";
+		str_res_extra_par_0_fix = resonant_channel_string[i];
+		str_res_extra_par_0_fix += "_res_extra_par_0_fix" ;
 		str_res_extra_par_1 = resonant_channel_string[i];
 		str_res_extra_par_1 += "_res_extra_par_1";
 		str_res_extra_par_1_lower_limit = resonant_channel_string[i];
@@ -215,14 +223,6 @@ void Read_Parameters(string input_txt_file_name, TFitter* minimizer, bool &real_
 		str_res_extra_par_3_upper_limit += "_res_extra_par_3_upper_limit";
 		str_res_extra_par_3_fix = resonant_channel_string[i];
 		str_res_extra_par_3_fix += "_res_extra_par_3_fix" ;
-		str_res_extra_par_4 = resonant_channel_string[i];
-		str_res_extra_par_4 += "_res_extra_par_4";
-		str_res_extra_par_4_lower_limit = resonant_channel_string[i];
-		str_res_extra_par_4_lower_limit += "_res_extra_par_4_lower_limit";
-		str_res_extra_par_4_upper_limit = resonant_channel_string[i];
-		str_res_extra_par_4_upper_limit += "_res_extra_par_4_upper_limit";
-		str_res_extra_par_4_fix = resonant_channel_string[i];
-		str_res_extra_par_4_fix += "_res_extra_par_4_fix" ;
 
 		// Reads the magnitude, phase, limits and if it is fix or not
 
@@ -257,6 +257,10 @@ void Read_Parameters(string input_txt_file_name, TFitter* minimizer, bool &real_
 		temp_width_upper_limit = input_txt_file->GetValue(str_res_width_upper_limit.c_str(),resonant_channel_width[i] + 1);
 		temp_width_fix = input_txt_file->GetValue(str_res_width_fix.c_str(),1);
 
+		temp_res_extra_par_0 = input_txt_file->GetValue(str_res_extra_par_0.c_str(),-99999999.);
+		temp_res_extra_par_0_lower_limit = input_txt_file->GetValue(str_res_extra_par_0_lower_limit.c_str(),-100000000);
+		temp_res_extra_par_0_upper_limit = input_txt_file->GetValue(str_res_extra_par_0_upper_limit.c_str(),-99999998);
+		temp_res_extra_par_0_fix = input_txt_file->GetValue(str_res_extra_par_0_fix.c_str(),1);
 		temp_res_extra_par_1 = input_txt_file->GetValue(str_res_extra_par_1.c_str(),-99999999.);
 		temp_res_extra_par_1_lower_limit = input_txt_file->GetValue(str_res_extra_par_1_lower_limit.c_str(),-100000000);
 		temp_res_extra_par_1_upper_limit = input_txt_file->GetValue(str_res_extra_par_1_upper_limit.c_str(),-99999998);
@@ -269,10 +273,6 @@ void Read_Parameters(string input_txt_file_name, TFitter* minimizer, bool &real_
 		temp_res_extra_par_3_lower_limit = input_txt_file->GetValue(str_res_extra_par_3_lower_limit.c_str(),-100000000);
 		temp_res_extra_par_3_upper_limit = input_txt_file->GetValue(str_res_extra_par_3_upper_limit.c_str(),-99999998);
 		temp_res_extra_par_3_fix = input_txt_file->GetValue(str_res_extra_par_3_fix.c_str(),1);
-		temp_res_extra_par_4 = input_txt_file->GetValue(str_res_extra_par_4.c_str(),-99999999.);
-		temp_res_extra_par_4_lower_limit = input_txt_file->GetValue(str_res_extra_par_4_lower_limit.c_str(),-100000000);
-		temp_res_extra_par_4_upper_limit = input_txt_file->GetValue(str_res_extra_par_4_upper_limit.c_str(),-99999998);
-		temp_res_extra_par_4_fix = input_txt_file->GetValue(str_res_extra_par_4_fix.c_str(),1);
 
 		// Checks if real and imaginary parts are fixed at zero. If they are, the resonant channel will be excluded from the model
 
@@ -293,14 +293,14 @@ void Read_Parameters(string input_txt_file_name, TFitter* minimizer, bool &real_
 			}
 			minimizer->SetParameter(8*number_of_resonances + 2,str_res_mass.c_str(),temp_mass, 0.00001,temp_mass_lower_limit,temp_mass_upper_limit);
 			minimizer->SetParameter(8*number_of_resonances + 3,str_res_width.c_str(),temp_width, 0.00001,temp_width_lower_limit,temp_width_upper_limit);
+			cout << "temp_res_extra_par_0 = " << temp_res_extra_par_0 << endl;
 			cout << "temp_res_extra_par_1 = " << temp_res_extra_par_1 << endl;
 			cout << "temp_res_extra_par_2 = " << temp_res_extra_par_2 << endl;
 			cout << "temp_res_extra_par_3 = " << temp_res_extra_par_3 << endl;
-			cout << "temp_res_extra_par_4 = " << temp_res_extra_par_4 << endl;
-			minimizer->SetParameter(8*number_of_resonances + 4,str_res_extra_par_1.c_str(),temp_res_extra_par_1, 0.00001,temp_res_extra_par_1_lower_limit,temp_res_extra_par_1_upper_limit);
-			minimizer->SetParameter(8*number_of_resonances + 5,str_res_extra_par_2.c_str(),temp_res_extra_par_2, 0.00001,temp_res_extra_par_2_lower_limit,temp_res_extra_par_2_upper_limit);
-			minimizer->SetParameter(8*number_of_resonances + 6,str_res_extra_par_3.c_str(),temp_res_extra_par_3, 0.00001,temp_res_extra_par_3_lower_limit,temp_res_extra_par_3_upper_limit);
-			minimizer->SetParameter(8*number_of_resonances + 7,str_res_extra_par_4.c_str(),temp_res_extra_par_4, 0.00001,temp_res_extra_par_4_lower_limit,temp_res_extra_par_4_upper_limit);
+			minimizer->SetParameter(8*number_of_resonances + 4,str_res_extra_par_0.c_str(),temp_res_extra_par_0, 0.00001,temp_res_extra_par_0_lower_limit,temp_res_extra_par_0_upper_limit);
+			minimizer->SetParameter(8*number_of_resonances + 5,str_res_extra_par_1.c_str(),temp_res_extra_par_1, 0.00001,temp_res_extra_par_1_lower_limit,temp_res_extra_par_1_upper_limit);
+			minimizer->SetParameter(8*number_of_resonances + 6,str_res_extra_par_2.c_str(),temp_res_extra_par_2, 0.00001,temp_res_extra_par_2_lower_limit,temp_res_extra_par_2_upper_limit);
+			minimizer->SetParameter(8*number_of_resonances + 7,str_res_extra_par_3.c_str(),temp_res_extra_par_3, 0.00001,temp_res_extra_par_3_lower_limit,temp_res_extra_par_3_upper_limit);
 			if (temp_coef1_fix == 1){
 				minimizer->FixParameter(8*number_of_resonances);
 				fix_parameter_index.push_back(8*number_of_resonances);
@@ -317,19 +317,19 @@ void Read_Parameters(string input_txt_file_name, TFitter* minimizer, bool &real_
 				minimizer->FixParameter(8*number_of_resonances + 3);
 				fix_parameter_index.push_back(8*number_of_resonances + 3);
 			}
-			if (temp_res_extra_par_1_fix == 1){
+			if (temp_res_extra_par_0_fix == 1){
 				minimizer->FixParameter(8*number_of_resonances + 4);
 				fix_parameter_index.push_back(8*number_of_resonances + 4);
 			}
-			if (temp_res_extra_par_2_fix == 1){
+			if (temp_res_extra_par_1_fix == 1){
 				minimizer->FixParameter(8*number_of_resonances + 5);
 				fix_parameter_index.push_back(8*number_of_resonances + 5);
 			}
-			if (temp_res_extra_par_3_fix == 1){
+			if (temp_res_extra_par_2_fix == 1){
 				minimizer->FixParameter(8*number_of_resonances + 6);
 				fix_parameter_index.push_back(8*number_of_resonances + 6);
 			}
-			if (temp_res_extra_par_4_fix == 1){
+			if (temp_res_extra_par_3_fix == 1){
 				minimizer->FixParameter(8*number_of_resonances + 7);
 				fix_parameter_index.push_back(8*number_of_resonances + 7);
 			}
