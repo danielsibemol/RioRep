@@ -278,14 +278,14 @@ void Read_Parameters(string input_txt_file_name, int &final_state, bool &is_gaus
 		AccNtpFile = new TFile(Acceptance_Ntuple_Name.c_str());
 		if (AccNtpFile->IsZombie()) {std::cout << "Acceptance - Error opening file " << Acceptance_Ntuple_Name << std::endl;exit(-1);}    			 	
 		AccHist = (TH2D*)AccNtpFile->Get(Acceptance_Histo_Name.c_str());
-		TAxis* s12AxisForAcc = AccHist->GetXaxis();
-		TAxis* s13AxisForAcc = AccHist->GetYaxis();
+		TAxis* s12AxisForAcc = AccHist->GetYaxis();
+		TAxis* s13AxisForAcc = AccHist->GetXaxis();
 		s12MinForAcc = s12AxisForAcc->GetXmin();
 		s12MaxForAcc = s12AxisForAcc->GetXmax();
 		s13MinForAcc = s13AxisForAcc->GetXmin();
 		s13MaxForAcc = s13AxisForAcc->GetXmax();
-		NBins12ForAcc = AccHist->GetNbinsX();
-		NBins13ForAcc = AccHist->GetNbinsY();
+		NBins12ForAcc = AccHist->GetNbinsY();
+		NBins13ForAcc = AccHist->GetNbinsX();
 		s12ExtForAcc = s12MaxForAcc - s12MinForAcc;
 		s13ExtForAcc = s13MaxForAcc - s13MinForAcc;
 
@@ -318,8 +318,8 @@ void Read_Parameters(string input_txt_file_name, int &final_state, bool &is_gaus
 
 		BackHist = (TH2D*)BackNtpFile->Get(Back_Histo_Name.c_str());
 		cout<<" después de bachist"<<endl;
-		TAxis* s12AxisForBack = BackHist->GetXaxis();
-		TAxis* s13AxisForBack = BackHist->GetYaxis();
+		TAxis* s12AxisForBack = BackHist->GetYaxis();
+		TAxis* s13AxisForBack = BackHist->GetXaxis();
 		cout<<" después de axis"<<endl;
 		s12MinForBack = s12AxisForBack->GetXmin();
 		cout<<" después de minsS12"<<endl;
@@ -329,8 +329,8 @@ void Read_Parameters(string input_txt_file_name, int &final_state, bool &is_gaus
 		cout<<" después de minsS13"<<endl;
 		s13MaxForBack = s13AxisForBack->GetXmax();
 		cout<<" después de maxS13"<<endl;
-		NBins12ForBack = BackHist->GetNbinsX();
-		NBins13ForBack = BackHist->GetNbinsY();
+		NBins12ForBack = BackHist->GetNbinsY();
+		NBins13ForBack = BackHist->GetNbinsX();
 		s12ExtForBack = s12MaxForBack - s12MinForBack;
 		s13ExtForBack = s13MaxForBack - s13MinForBack;
 		cout<<" después de todo back"<<endl;
