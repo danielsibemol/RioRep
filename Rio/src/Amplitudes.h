@@ -28,10 +28,10 @@ void Amplitudes(int &final_state,
 
 {
 
-	double s, m_0, w_0, m12, m13, m23, m1sq, m2sq, m3sq, gamma, f_theta, fR, fD, m1, m2, m3, aa, bb, ak, bk, aa3, bb3, dmKK, real, imaginary, Cd, Cm, real_O, imag_O, M_O, W_O, g_K, g_pi;
+	double m_0, w_0, m12, m13, m23, m1sq, m2sq, m3sq, gamma, f_theta, fR, fD, m1, m2, m3, aa, bb, ak, bk, aa3, bb3, dmKK, real, imaginary, Cd, Cm, real_O, imag_O, M_O, W_O, g_K, g_pi;
 	int khi,klo,npt, size_resonances = 0, size_bkg = 0, spin, khi12, klo12, khi13, klo13;
 	TComplex pole, Real_factor, BWbkg, temp_sig, temp_bkg, sig12, sig13, gamma_pi, gamma_K, gamma_f0;
-
+	UNUSED(m23);
 
 	// Define masses and square masses
 
@@ -67,7 +67,6 @@ void Amplitudes(int &final_state,
 	m1sq = m1*m1;
 	m2sq = m2*m2;
 	m3sq = m3*m3;
-	s = M*M;
 
 	////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////

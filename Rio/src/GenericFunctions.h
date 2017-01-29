@@ -768,14 +768,12 @@ TH2D* CalculateChiSq(  TH2D* pdf, TH2D* toy, TH2D* dat, int nparams, int &ndof, 
 	       dataVal, 
 	       diff,
 	       errsq,
-	       errToy,
-	       errPDF;
+	       errToy;
 
 	for( Int_t i = 1; i <= nbins; ++i ) 
 	{	
 		Double_t chiSq = 0.;
 		pdfVal  = pdf->GetBinContent(i);
-		errPDF  = pdf->GetBinError(i);
 		toyVal  = toy->GetBinContent(i);
 		errToy  = toy->GetBinError(i);
 		dataVal = dat->GetBinContent(i);

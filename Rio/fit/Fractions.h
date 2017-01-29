@@ -229,8 +229,8 @@ cout << " Frac Sum = " << f_sum << " +- " << f_sum_err << endl;
 
 
 ofstream myfiletex2;
-string frag2 ="Results_PDF_fit/"+rootfile.substr(0,rootfile.length()-4);
-string outex2= frag+"_amp_phs.tex";
+string frag2 ="Results_PDF_fit/"+rootfile.substr(0,rootfile.length()-5);
+string outex2= frag2+"_amp_phs.tex";
 myfiletex2.open(outex2.c_str());
 
 myfiletex2 <<"\\begin{tabular}{@{}p{3.0cm}p{2cm}p{2cm}p{2.5cm}@{}}"<<endl
