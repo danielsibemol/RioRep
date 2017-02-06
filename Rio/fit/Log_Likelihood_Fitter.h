@@ -25,7 +25,7 @@ void Log_Likelihood_Fitter(string input_txt_file_name, int sample_number)
 	double M, s12, s13, s23, dummyS12, dummyS13, dummyS23;
 
 
-	string input_ntuple_name, output_pwa_txt_file;//, Acceptance_Ntuple_Name, Acceptance_Histo_Name;
+	string input_ntuple_name, output_pwa_txt_file;
 
 	vector<string> included_resonant_channel_string;
 	vector<double> tmp_res_extra_pars(4);
@@ -181,7 +181,6 @@ void Log_Likelihood_Fitter(string input_txt_file_name, int sample_number)
 
 		if( jentry0 < 10 )  	cout<<" eoloop "<< jentry0 <<" s12 "<<s12<<" s13 "<<s13<<" s23 "<<s23<< endl;
 		++nentries0;
-		//if(nentries0==10000) break;  /////HACER ESTE FIT CON 100K TAMBIEN
 	}
 
 	nentries = nentries0;
@@ -343,8 +342,7 @@ void Log_Likelihood_Fitter(string input_txt_file_name, int sample_number)
 	UseAcceptance=kTRUE;
 
 
-	bool drawPlot = kFALSE;
-	//bool drawPlot = kTRUE;
+	bool drawPlot = kTRUE;
 	cout << "S12.size() = " << S12.size() << endl;
 
 	cout << " (no plot) fitting time of sample " << sample_number <<" = "<< endl;
@@ -365,10 +363,9 @@ void Log_Likelihood_Fitter(string input_txt_file_name, int sample_number)
 				S12,
 				S13, 
 				S23, 
-				input_ntuple_name,
+				input_txt_file_name,
 				oss2.str() );
 
-	cout<<" No aqui si "<<endl;
 	clock.Stop();
 	cout << "full fitting time of sample " << sample_number << endl;
 	clock.Print("u");

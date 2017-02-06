@@ -731,21 +731,18 @@ void DrawMypull( TH1F *hdata, TH1F *hfunc, TH1F *htoy ) {
 	PullHist->SetBarWidth(0.75);
 	PullHist->SetBarOffset(0.1);
 	PullHist->SetStats(0);
-	PullHist->SetMinimum(-5);
-	PullHist->SetMaximum(5);
+	PullHist->SetMinimum(-5.);
+	PullHist->SetMaximum(5.);
 	PullHist->SetTitleFont(62);
 	PullHist->SetTitleOffset(1.1,"y");
-	// PullHist->SetTextSize(0.08);
 	PullHist->SetTitleSize(0.3,"y");
 	PullHist->SetLabelOffset(0.005);
-	PullHist->GetXaxis()->SetLabelSize(0.);
-	//PullHist->SetTitleSize(0.06,"z");
+	PullHist->GetXaxis()->SetLabelSize(0.1);
 	PullHist->GetYaxis()->SetNdivisions(2, kTRUE);
 	PullHist->GetYaxis()->SetLabelSize(0.2);
 	PullHist->SetYTitle( "#bf{Pull}" );
 
 	PullHist->Draw("b");
-
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -789,13 +786,7 @@ TH2D* CalculateChiSq(  TH2D* pdf, TH2D* toy, TH2D* dat, int nparams, int &ndof, 
 		if (diff > 0)   histoChi2->SetBinContent(i, chiSq);
 		else    histoChi2->SetBinContent(i, -chiSq);
 	}
-	//kolmog = toy->KolmogorovTest(dat);
 	ndof = nob-nparams-1;
-	cout << "number of bins with dataval > 20: " << nob; 
-	cout<<"Total ChiSq/nDof = "<<totalChiSq<<"/"<<ndof<<" = "<<totalChiSq/ndof<<endl;
-	//totalChiSq/=ndof;
-	//delete toy;
-	//delete dat;
 
 	return  histoChi2;
 
@@ -804,15 +795,14 @@ TH2D* CalculateChiSq(  TH2D* pdf, TH2D* toy, TH2D* dat, int nparams, int &ndof, 
 ////////////////////////////////////////////////////////////////////////
 TH2Poly* CalculateChiSq_adaptive( TH2Poly* pdf, TH2Poly* toy, TH2Poly* dat, int nparams, int &ndof, double &totalChiSq, double &kolmog ) {
 
-	//int nbins=toy->GetNbinsX()*toy->GetNbinsY();
 	int nbins=toy->GetNumberOfBins();
 	TH2Poly  *histoChi2 =  new TH2Poly("Chi2", "Chi2", 0.0, 2.1, 0.9, 3.1);
 	double Bins12Max, Bins13Min, Bins13Max, Bins12Min;
 	UNUSED(kolmog);
-	ifstream infile("bins_2025Dkkpi_TISorTOS.txt",ios::in);
+	ifstream infile("bins_2025Dkkpi_TIS.txt",ios::in);
 
 	if (!infile.good()) {
-		std::cout << "BinAreasAndInt - ERROR: File not found - infile" << std::endl;
+		std::cout << "CalculateChiSq_adaptive (GenericFunctions.h) - ERROR: File not found - infile" << std::endl;
 		exit(-1);
 	}
 
@@ -826,12 +816,9 @@ TH2Poly* CalculateChiSq_adaptive( TH2Poly* pdf, TH2Poly* toy, TH2Poly* dat, int 
 		histoChi2->AddBin(Bins13Min, Bins12Min, Bins13Max, Bins12Max);
 	}
 
-	//cout<<" CalculateChiSq: cheke clone = "<<endl;
 	histoChi2-> ClearBinContents();
-	//cout<<" CalculateChiSq: cheke clear = "<<endl;
 	histoChi2->SetXTitle("s_low");
 	histoChi2->SetYTitle("s_high");
-	//cout<<" CalculateChiSq: cheke titles = "<<endl;
 	int minimum    = 20,
 	    nob        = 0;
 	totalChiSq = 0;
@@ -840,8 +827,7 @@ TH2Poly* CalculateChiSq_adaptive( TH2Poly* pdf, TH2Poly* toy, TH2Poly* dat, int 
 	       dataVal, 
 	       diff,
 	       errsq,
-	       errToy,
-	       errPDF;
+	       errToy;
 
 	for( Int_t i = 1; i <= nbins; ++i ) 
 	{	
@@ -849,32 +835,21 @@ TH2Poly* CalculateChiSq_adaptive( TH2Poly* pdf, TH2Poly* toy, TH2Poly* dat, int 
 		toyVal  = toy->GetBinContent(i);
 		pdfVal  = pdf->GetBinContent(i);
 		dataVal = dat->GetBinContent(i);
-		errPDF  = pdf->GetBinError(i);
 		errToy  = toy->GetBinError(i);
 
 
 		diff = pdfVal-dataVal;
 		errsq = pow((pdfVal/toyVal)*errToy,2) + dataVal;
-		cout << "toyVal = " << toyVal << "dataVal = " << dataVal << endl;
 		if( /*toyVal > minimum &&*/ dataVal > minimum ) 
 		{			
 			chiSq = (diff*diff)/errsq;
 			++nob;
-			cout << "Bin " << i << " -  toyVal = " << toyVal << ", errToy = " << errToy << ", pdfVal =  " << pdfVal  << ", errPDF = " << errPDF << ", dataVal =  " << dataVal 
-				<< ", errsq =  " << errsq  << ", Chi2Sq = " 
-				<< chiSq  << ", totalChiSq = " << totalChiSq << endl; 
-			//		cout << "Bin " << i << " -  toyVal = " << toyVal << ", pdfVal =  " << pdfVal  << ", dataVal =  " << dataVal  << ", errsq =  " << errsq  << ", Chi2Sq = " 
-			//			<< chiSq  << ", totalChiSq = " << totalChiSq << endl; 
 		}
 		totalChiSq += chiSq;
 		if (diff > 0)	histoChi2->SetBinContent(i, chiSq);
 		else	histoChi2->SetBinContent(i, -chiSq);
 	}
-	//	kolmog = toy->KolmogorovTest(dat);
 	ndof = nob-nparams-1;
-	//totalChiSq/=ndof;			
-	cout<<"Total ChiSq/nDof = "<<totalChiSq<<endl;
-
 	return  histoChi2;
 
 }

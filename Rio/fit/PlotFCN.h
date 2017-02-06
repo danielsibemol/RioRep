@@ -61,7 +61,10 @@ void PlotFCN(  TFitter *minimizer,
 		vector<double> S13, 
 		vector<double> S23,
 		string rootfile,
-	      	string oss2 ) {
+		string oss2 ) {
+
+	// Defining all variables
+
 
 	// Do you want to draw the interference terms  ?
 	bool Draw_interf = false;
@@ -101,7 +104,7 @@ void PlotFCN(  TFitter *minimizer,
 	vector< double > normalization_bkg,  
 		res_masses, 
 		res_widths,
-		tmp_res_extra_pars;
+		tmp_res_extra_pars(4);
 
 	vector< vector< double > > res_extra_pars;  
 
@@ -258,6 +261,7 @@ void PlotFCN(  TFitter *minimizer,
 	gStyle->SetTitleSize(0.06,"y");
 	gStyle->SetTitleSize(0.06,"z");
 
+
 	int  nnh = 100,
 	     nevts;
 
@@ -265,6 +269,8 @@ void PlotFCN(  TFitter *minimizer,
 
 	double par[ 8 * number_of_resonances + number_of_bkg_components + 2 * number_of_pwa_bins ];
 	vector< vector< TComplex > > coefs_product( number_of_resonances, vector< TComplex > ( number_of_resonances ) );
+
+	// reading Parameters
 
 	for (int i = 0; i < 8 * number_of_resonances + number_of_bkg_components +
 			2 * number_of_pwa_bins; i++ ) {
@@ -286,6 +292,7 @@ void PlotFCN(  TFitter *minimizer,
 		coefs[ i ] = tmp;
 	}
 
+
 	for ( int res_i = 0; res_i < number_of_resonances; res_i++ ) {
 
 		for ( int res_j = 0; res_j < number_of_resonances; res_j++ ) {
@@ -295,13 +302,13 @@ void PlotFCN(  TFitter *minimizer,
 		}
 	}
 
+
 	for ( int i = 0; i < AVAILABLE_RESONANCES; i++ ) {
 
 		if ( resonances[ i ] == 1 ) {
 
 			res_masses.push_back( par[ 8 * res_number + 2 ] );
 			res_widths.push_back( par[ 8 * res_number + 3 ] );
-			//cout << "res_mass = " << res_masses[res_number] << ", res_width = " << res_widths[res_number] << endl; 
 			for ( int extra_par = 0; extra_par < 4; extra_par++ ) {
 				tmp_res_extra_pars[extra_par] = par[ 8 * res_number + 4 + extra_par];
 			}
@@ -311,6 +318,38 @@ void PlotFCN(  TFitter *minimizer,
 		}
 
 	}
+
+	for ( unsigned int number_of_pwa_bins = 0; number_of_pwa_bins < KK_bin_limit.size(); 
+			number_of_pwa_bins++ ) {
+
+		if ( real_and_imaginary ) {
+
+			temp_pwa_coef( par[ 8 * number_of_resonances + number_of_bkg_components +
+					2 * number_of_pwa_bins ],
+					par[ 8 * number_of_resonances + number_of_bkg_components +
+					2 * number_of_pwa_bins + 1 ] );
+		} else {
+
+			temp_pwa_coef( par[ 8 * number_of_resonances + number_of_bkg_components +
+					2 * number_of_pwa_bins ],
+					par[ 8 * number_of_resonances + number_of_bkg_components +
+					2 * number_of_pwa_bins + 1 ], 1 );
+		}
+
+		pwa_coefs.push_back( temp_pwa_coef );
+
+	}
+	npt = KK_bin_limit.size();
+
+	Complex_Derivative( KK_bin_limit, 
+			pwa_coefs, 
+			npt, 
+			pwa_coefs_prime );
+
+	sig_amp.resize( number_of_resonances );
+	bkg_amp.resize( number_of_bkg_components );
+
+	// Setting axis ranges and titles 
 
 	switch ( final_state ) {
 		case 0:
@@ -426,6 +465,8 @@ void PlotFCN(  TFitter *minimizer,
 	m2sq = m2*m2;
 	m3sq = m3*m3;
 
+	//Defining Histograms
+
 	TH2D *TotalPDFHist  = 
 		new TH2D( "TotalPDFHist", "TotPdf", nnh, s13_min, s13_max, nnh, .9, 3.1 ),
 		    *TotalToyHist = 
@@ -507,7 +548,7 @@ void PlotFCN(  TFitter *minimizer,
 			++interf_count;
 		}
 	}
-	cout<<" counter of interf = "<< interf_count<<endl;
+
 	interf_count = 0;
 
 	for ( Int_t bb = 0; bb < number_of_bkg_components; ++bb ) {
@@ -525,6 +566,8 @@ void PlotFCN(  TFitter *minimizer,
 
 	}
 
+	// Reading bin limits of adaptive binning histogram
+
 	int Adaptative_bin_number = 2025;
 	double Bins12Min, Bins13Min, Bins12Max, Bins13Max;
 	TH2Poly *TotalPDFHist_Chi2  = new TH2Poly("TotalPDF", "TotalPDF", s13_min, s13_max, s12_min, s12_max);
@@ -532,6 +575,11 @@ void PlotFCN(  TFitter *minimizer,
 	TH2Poly  *TotalDataHist_Chi2 =  new TH2Poly("TotalData", "TotalData", s13_min, s13_max, s12_min, s12_max);
 
 	ifstream infile("bins_2025Dkkpi_TIS.txt",ios::in);
+
+	if(!infile.is_open()){
+		cout << "PlotFCN - ERROR: cannot open bins_2025Dkkpi_TIS.txt" << endl;
+		exit( -1 );
+	}
 
 	for (int i = 0; i<Adaptative_bin_number; i++) {
 
@@ -543,40 +591,9 @@ void PlotFCN(  TFitter *minimizer,
 		TotalPDFHist_Chi2->AddBin(Bins13Min, Bins12Min, Bins13Max, Bins12Max);
 		TotalToyHist_Chi2->AddBin(Bins13Min, Bins12Min, Bins13Max, Bins12Max);
 		TotalDataHist_Chi2->AddBin(Bins13Min, Bins12Min, Bins13Max, Bins12Max);
-		//cout << "Bin " << i << " - Bins12Min = " << Bins12Min << ", Bins12Max = " << Bins12Max << ", Bins13Min = " << Bins13Min 
-		//	<< ", Bins13Max = " << Bins13Max << endl;
 	}
 
-	for ( unsigned int number_of_pwa_bins = 0; number_of_pwa_bins < KK_bin_limit.size(); 
-			number_of_pwa_bins++ ) {
-
-		if ( real_and_imaginary ) {
-
-			temp_pwa_coef( par[ 8 * number_of_resonances + number_of_bkg_components +
-					2 * number_of_pwa_bins ],
-					par[ 8 * number_of_resonances + number_of_bkg_components +
-					2 * number_of_pwa_bins + 1 ] );
-		} else {
-
-			temp_pwa_coef( par[ 8 * number_of_resonances + number_of_bkg_components +
-					2 * number_of_pwa_bins ],
-					par[ 8 * number_of_resonances + number_of_bkg_components +
-					2 * number_of_pwa_bins + 1 ], 1 );
-		}
-
-		pwa_coefs.push_back( temp_pwa_coef );
-
-	}
-	npt = KK_bin_limit.size();
-
-	Complex_Derivative( KK_bin_limit, 
-			pwa_coefs, 
-			npt, 
-			pwa_coefs_prime );
-
-	sig_amp.resize( number_of_resonances );
-	bkg_amp.resize( number_of_bkg_components );
-
+	// Calculating integrals
 
 	ComplexSigNorm( final_state, 
 			is_gaussian, 
@@ -610,6 +627,8 @@ void PlotFCN(  TFitter *minimizer,
 
 	ds12 = (s12max - s12min)/moments_npt;
 	ds13 = (s13max - s13min)/moments_npt;
+
+	// initializing moment variables for Data events
 
 	for(int i=0;i<moments_npt;i++)  {
 
@@ -671,13 +690,16 @@ void PlotFCN(  TFitter *minimizer,
 		sacmax =  m1sq + m3sq + 2*E1*E3 + 2*p1*p3;
 		sacmin =   m1sq + m3sq + 2*E1*E3 - 2*p1*p3;
 		PScorr_12[i] = 1/(sacmax - sacmin);
-		//cout << "PScorr[i] = " << PScorr[i] << endl;
-		//cout << "PScorr_13[i] = " << PScorr_13[i] << ", PScorr_12[i] = " << PScorr_12[i] << endl; 
-		//cout << ", s12_limits[i] = " << s12_limits[i]  << ", s13_limits[i] = " << s13_limits[i]  << endl;
 
 	}
 
 	nentries  = S12.size();
+
+	//Loop on Data events 
+
+	cout << endl;
+	cout << "-----------------------------------------------------------------------------------------------------------------------------------" << endl;
+	cout << endl;
 
 	for ( Long64_t jentry = 0; jentry < nentries; ++jentry ) {
 
@@ -707,8 +729,6 @@ void PlotFCN(  TFitter *minimizer,
 		E3 = (s - s12 - m3sq)/(2*sqrt(s12));
 		z = (m1sq + m3sq + 2*E1*E3 - s13)/(2*p1*p3);
 
-		//		if(fabs(z)>1) cout << "z = " << z << ", s12 = " << s12 << ", s13 = " << s13 << endl;
-
 		if (fabs(z)<1){
 
 			// Legendre polynomials for this event
@@ -722,16 +742,16 @@ void PlotFCN(  TFitter *minimizer,
 			if((s12 > s12min)&&(s12 < s12max)){
 
 				// acceptance for this event       
-				if (s12>1.6) acc = acceptance(s12,s13);
-
-				//	cout << " acc = " << acc << endl;
+				acc = acceptance(s12,s13);
 
 				// find in which m12 bin this event belongs to;
 				if(s12 < s12_limits[0]) bin=0;
 				for(int i=1;i<moments_npt;i++) {if(s12>s12_limits[i-1] && s12<s12_limits[i]) bin=i;}
 
 				// this is the event weight
-				w = PScorr_12[bin]/acc;
+				if (acc > 0.0000000001) w = PScorr_12[bin]/acc;
+				else w = 0;
+
 				// Increment mass bin population and compute the moments for this event 
 				bin_pop_12[bin] = bin_pop_12[bin] + 1.;
 				t0_12[bin]= t0_12[bin] + w*PL[0];
@@ -740,18 +760,12 @@ void PlotFCN(  TFitter *minimizer,
 				t3_12[bin]= t3_12[bin] + w*PL[3];
 				t4_12[bin]= t4_12[bin] + w*PL[4];
 
-				//Integral += t0[bin];
-
-				//if (s12>1.6) cout << "w = " << w << ", t0 = " << t0_12[bin] << ", Integral = " << Integral_12 << ", bin = " << bin  << ", s12_limits[i-1] = " << s12_limits[bin-1]  << ", s12_limits[i] = " << s12_limits[bin]  << ", s12 = " << s12 << endl;  
-
 				// variables for errors on moments
 				t0sq_12[bin] = t0sq_12[bin] + w*PL[0]*w*PL[0];
 				t1sq_12[bin] = t1sq_12[bin] + w*PL[1]*w*PL[1];
 				t2sq_12[bin] = t2sq_12[bin] + w*PL[2]*w*PL[2];
 				t3sq_12[bin] = t3sq_12[bin] + w*PL[3]*w*PL[3];
 				t4sq_12[bin] = t4sq_12[bin] + w*PL[4]*w*PL[4];
-
-				//IntegralSq += t0sq[bin];
 			}
 		}
 
@@ -774,16 +788,16 @@ void PlotFCN(  TFitter *minimizer,
 			if((s13 > s13min)&&(s13 < s13max)){
 
 				// acceptance for this event       
-				if (s13>0.9)	acc = acceptance(s12,s13);
-
-				//cout << " acc = " << acc << endl;
+				acc = acceptance(s12,s13);
 
 				// find in which m13 bin this event belongs to;
 				if(s13 < s13_limits[0]) bin=0;
 				for(int i=1;i<moments_npt;i++) {if(s13>s13_limits[i-1] && s13<s13_limits[i]) bin=i;}
 
 				// this is the event weight
-				w = PScorr_13[bin]/acc;
+				if (acc  > 0.000000001) w = PScorr_13[bin]/acc;
+				else w = 0;
+
 				// Increment mass bin population and compute the moments for this event 
 				bin_pop_13[bin] = bin_pop_13[bin] + 1.;
 				t0_13[bin]= t0_13[bin] + w*PL[0];
@@ -792,20 +806,15 @@ void PlotFCN(  TFitter *minimizer,
 				t3_13[bin]= t3_13[bin] + w*PL[3];
 				t4_13[bin]= t4_13[bin] + w*PL[4];
 
-				//Integral += t0[bin];
-
-				//if (s13>0.9) cout << "w = " << w << ", t0 = " << t0_13[bin] << ", Integral = " << Integral_13 << ", bin = " << bin << ", s13_limits[i-1] = " << s13_limits[bin-1]  << ", s13_limits[i] = " << s13_limits[bin]  << ", s13 = " << s13 << endl;  
-
 				// variables for errors on moments
 				t0sq_13[bin] = t0sq_13[bin] + w*PL[0]*w*PL[0];
 				t1sq_13[bin] = t1sq_13[bin] + w*PL[1]*w*PL[1];
 				t2sq_13[bin] = t2sq_13[bin] + w*PL[2]*w*PL[2];
 				t3sq_13[bin] = t3sq_13[bin] + w*PL[3]*w*PL[3];
 				t4sq_13[bin] = t4sq_13[bin] + w*PL[4]*w*PL[4];
-
-				//IntegralSq += t0sq[bin];
 			}
 		}
+		if(jentry%1000==0 && (jentry) != 0)  cout << "PlotFCN - Processing Data events - " << double(jentry)*100.0/double(nentries) << "%    \r" << flush;
 	}
 
 	for (int i=0; i<moments_npt; i++) {
@@ -814,8 +823,6 @@ void PlotFCN(  TFitter *minimizer,
 	}
 
 	for (int i=0; i<moments_npt; i++) {
-
-		//		              cout << "t0_12[" << i <<"] = " << t0_12[i] << ", t1_12[" << i <<"] = " << t1_12[i] << ", t2_12[" << i <<"] = " << t2_12[i] << ", t3_12[" << i <<"] = " << t3_12[i] << ", t4_12[" << i <<"] = " << t4_12[i] << ", Integral = " << Integral_12 << "bin pop = "<< bin_pop_12[i] << endl; 
 
 		t0_12[i] = t0_12[i]/Integral_12;
 		t1_12[i] = t1_12[i]/Integral_12;
@@ -853,9 +860,9 @@ void PlotFCN(  TFitter *minimizer,
 		av_w2 = t4sq_12[i]/bin_pop_12[i];
 		sigma_w = av_w2 - av_w*av_w;
 		t4_err_12[i] = fabs(t4_12[i])/sqrt(bin_pop_12[i])*sqrt(1.+(sigma_w/av_w)*(sigma_w/av_w));
-
-		//		cout << "t0_err_12 = " << t0_err_12[i] << "t1_err_12 = " << t1_err_12[i] << "t2_err_12 = " << t2_err_12[i] << "t3_err_12 = " << t3_err_12[i] << "t4_err_12 = " << t4_err_12[i] << ", bin pop = "<< bin_pop_12[i] << endl;
 	}
+
+	// filling moments graphs
 
 	plot_moments(m_12, t0_12, t1_12, t2_12, t3_12, t4_12, t0_err_12, t1_err_12, t2_err_12, t3_err_12, t4_err_12, g0_12_Data, g1_12_Data, g2_12_Data, g3_12_Data, g4_12_Data);
 
@@ -865,8 +872,6 @@ void PlotFCN(  TFitter *minimizer,
 	}
 
 	for (int i=0; i<moments_npt; i++) {
-
-		//		              cout << "t0_13[" << i <<"] = " << t0_13[i] << ", t1[" << i <<"] = " << t1_13[i] << ", t2_13[" << i <<"] = " << t2_13[i] << ", t3_13[" << i <<"] = " << t3_13[i] << ", t4_13[" << i <<"] = " << t4_13[i] << ", Integral = " << Integral_13 << "bin pop = "<< bin_pop_13[i] << endl; 
 
 		t0_13[i] = t0_13[i]/Integral_13;
 		t1_13[i] = t1_13[i]/Integral_13;
@@ -904,11 +909,13 @@ void PlotFCN(  TFitter *minimizer,
 		av_w2 = t4sq_13[i]/bin_pop_13[i];
 		sigma_w = av_w2 - av_w*av_w;
 		t4_err_13[i] = fabs(t4_13[i])/sqrt(bin_pop_13[i])*sqrt(1.+(sigma_w/av_w)*(sigma_w/av_w));
-
-		//		cout << "t0_err_13 = " << t0_err_13[i] << "t1_err_13 = " << t1_err_13[i] << "t2_err_13 = " << t2_err_13[i] << "t3_err_13 = " << t3_err_13[i] << "t4_err_13 = " << t4_err_13[i] << "bin pop = "<< bin_pop_12[i] << endl;
 	}
 
+	// filling moments graphs
+
 	plot_moments(m_13, t0_13, t1_13, t2_13, t3_13, t4_13, t0_err_13, t1_err_13, t2_err_13, t3_err_13, t4_err_13, g0_13_Data, g1_13_Data, g2_13_Data, g3_13_Data, g4_13_Data);
+
+	// initializing moment variable for MC events
 
 	for(int i=0;i<moments_npt;i++)  {
 
@@ -949,7 +956,9 @@ void PlotFCN(  TFitter *minimizer,
 	Integral_13 = 0;
 	IntegralSq_13 = 0;
 
-	TFile f( "/Users/dvieira/Dropbox/toyMCGenerator/ntuple_flat_kkpi_100M_0.root" );
+	// Define flat MC ntuple 
+
+	TFile f( "/ucas/devieira/D2KKpi/toyMCgenerator/ntuple_flat_kkpi_100M_0.root" );
 	TTree *t1 = (TTree*)f.Get( "DecayTree" );
 
 	t1->SetBranchAddress( "s12",    &s12 );
@@ -958,17 +967,15 @@ void PlotFCN(  TFitter *minimizer,
 	t1->SetBranchAddress( "s_low",  &s_low );
 	t1->SetBranchAddress( "s_high", &s_high );
 	nevts = t1->GetEntries();
-	//nevts = 10000;
+
+	cout << endl;
+	cout << "-----------------------------------------------------------------------------------------------------------------------------------" << endl;
+	cout << endl;
 
 	double totalPdf = 0;
 	double L_s = 0;
 	for ( Long64_t jentry = 0; jentry < nevts; ++jentry ) {
 		t1->GetEntry( jentry );
-
-		//			Slo.push_back(s_low);
-		//			S13.push_back(s_high);
-
-		//cout << " s12 = " << s12 << ", s13 = " << s13 << ", s23 = " << s23 << endl;
 
 		Amplitudes( final_state, 
 				M , 
@@ -986,8 +993,6 @@ void PlotFCN(  TFitter *minimizer,
 				pwa_coefs, 
 				pwa_coefs_prime );
 
-		//		SigAmps.push_back( sig_amp );
-		//		BkgAmps.push_back( bkg_amp );
 
 		L_s = TotPdf( bkg_fraction, 
 				sig_amp, 
@@ -1007,15 +1012,11 @@ void PlotFCN(  TFitter *minimizer,
 
 		double accTerm = ( UseAcceptance ? acceptance( s12, s13 ) : 1 );
 
-		//		cout << "s12 = " << s12 << ", s13 = " << s13 << ", L_s = " << L_s << ", accTerm = " << accTerm << endl;   
-
 		p1=0.5*sqrt( ( (s12 - m1sq - m2sq)*(s12 - m1sq - m2sq) - 4*m1sq*m2sq )/s12 );
 		p3=0.5*sqrt( ( (s - s12 - m3sq)*(s - s12 - m3sq) - 4*s12*m3sq )/s12 );
 		E1 = (s12 + m1sq - m2sq) / (2*sqrt(s12));
 		E3 = (s - s12 - m3sq)/(2*sqrt(s12));
 		z = (m1sq + m3sq + 2*E1*E3 - s13)/(2*p1*p3);
-
-		//if(fabs(z)>1 && (s12 < 1.4)) cout << "z = " << z << ", s12 = " << s12 << ", s13 = " << s13 << endl;
 
 		if (fabs(z)<1){
 
@@ -1032,8 +1033,6 @@ void PlotFCN(  TFitter *minimizer,
 				// acceptance for this event       
 				acc = acceptance(s12,s13);
 
-				//cout << " acc = " << acc << endl;
-
 				// find in which m12 bin this event belongs to;
 				if(s12 < s12_limits[0]) bin=0;
 				for(int i=1;i<moments_npt;i++) {if(s12>s12_limits[i-1] && s12<s12_limits[i]) bin=i;}
@@ -1048,10 +1047,6 @@ void PlotFCN(  TFitter *minimizer,
 				t3_12[bin]= t3_12[bin] + w*PL[3];
 				t4_12[bin]= t4_12[bin] + w*PL[4];
 
-				//Integral += t0[bin];
-
-				//cout << "w = " << w << ", t0 = " << t0[bin] << ", Integral = " << Integral << endl;  
-
 				// variables for errors on moments
 				t0sq_12[bin] = t0sq_12[bin] + w*PL[0]*w*PL[0];
 				t1sq_12[bin] = t1sq_12[bin] + w*PL[1]*w*PL[1];
@@ -1059,7 +1054,6 @@ void PlotFCN(  TFitter *minimizer,
 				t3sq_12[bin] = t3sq_12[bin] + w*PL[3]*w*PL[3];
 				t4sq_12[bin] = t4sq_12[bin] + w*PL[4]*w*PL[4];
 
-				//IntegralSq += t0sq[bin];
 			}
 		}
 
@@ -1084,8 +1078,6 @@ void PlotFCN(  TFitter *minimizer,
 				// acceptance for this event       
 				acc = acceptance(s12,s13);
 
-				//cout << " acc = " << acc << endl;
-
 				// find in which m13 bin this event belongs to;
 				if(s13 < s13_limits[0]) bin=0;
 				for(int i=1;i<moments_npt;i++) {if(s13>s13_limits[i-1] && s13<s13_limits[i]) bin=i;}
@@ -1100,18 +1092,12 @@ void PlotFCN(  TFitter *minimizer,
 				t3_13[bin]= t3_13[bin] + w*PL[3];
 				t4_13[bin]= t4_13[bin] + w*PL[4];
 
-				//Integral += t0[bin];
-
-				//cout << "w = " << w << ", t0 = " << t0[bin] << ", Integral = " << Integral << endl;  
-
 				// variables for errors on moments
 				t0sq_13[bin] = t0sq_13[bin] + w*PL[0]*w*PL[0];
 				t1sq_13[bin] = t1sq_13[bin] + w*PL[1]*w*PL[1];
 				t2sq_13[bin] = t2sq_13[bin] + w*PL[2]*w*PL[2];
 				t3sq_13[bin] = t3sq_13[bin] + w*PL[3]*w*PL[3];
 				t4sq_13[bin] = t4sq_13[bin] + w*PL[4]*w*PL[4];
-
-				//IntegralSq += t0sq[bin];
 			}
 		}
 
@@ -1121,7 +1107,7 @@ void PlotFCN(  TFitter *minimizer,
 			{
 				if(j==i)continue;
 
-				interf_prod = 2*(coefs_product[i][j].Rho() * SigAmps[jentry][i]*SigAmps[jentry][j].Conjugate(SigAmps[jentry][j])).Re();
+				interf_prod = 2*(coefs_product[i][j].Rho() * sig_amp[i]*sig_amp[j].Conjugate(sig_amp[j])).Re();
 
 				histo_interf_sij[ 0 ][ interf_count ]->Fill( s_low,  interf_prod * ( 1 - bkg_fraction ) * accTerm / NL_s );
 				histo_interf_sij[ 1 ][ interf_count ]->Fill( s_high, interf_prod * ( 1 - bkg_fraction ) * accTerm / NL_s );
@@ -1134,7 +1120,7 @@ void PlotFCN(  TFitter *minimizer,
 
 		interf_count = 0;
 
-
+		// Fill component histograms
 		for ( int xx = 0; xx < number_of_resonances; ++xx ) {
 
 			spd_prod = coefs_product[ xx ][ xx ].Rho() * sig_amp[ xx ].Rho2();
@@ -1155,6 +1141,7 @@ void PlotFCN(  TFitter *minimizer,
 					spd_prod * ( 1 - bkg_fraction ) * accTerm / NL_s );                            
 		}
 
+		// Fill Background histograms
 
 		for ( int i = 0; i < number_of_bkg_components; ++i ) {
 
@@ -1206,7 +1193,13 @@ void PlotFCN(  TFitter *minimizer,
 		S23HistToy  ->Fill( s23 );
 		totalPdf += L_s;
 
+		if(jentry%1000==0 && (jentry) != 0)  cout << "PlotFCN - Processing MC events - " << double(jentry)*100.0/double(nevts) << "%    \r" << flush;
+
 	}
+
+	cout << endl;
+	cout << "-----------------------------------------------------------------------------------------------------------------------------------" << endl;
+	cout << endl;
 
 	for (int i=0; i<moments_npt; i++) {
 		Integral_12 += t0_12[i];
@@ -1214,8 +1207,6 @@ void PlotFCN(  TFitter *minimizer,
 	}
 
 	for (int i=0; i<moments_npt; i++) {
-
-		//              cout << "t0[" << i <<"] = " << t0[i] << ", t1[" << i <<"] = " << t1[i] << ", t2[" << i <<"] = " << t2[i] << ", t3[" << i <<"] = " << t3[i] << ", t4[" << i <<"] = " << t4[i] << ", Integral = " << Integral << "bin pop = "<< bin_pop[i] << endl; 
 
 		t0_12[i] = t0_12[i]/Integral_12;
 		t1_12[i] = t1_12[i]/Integral_12;
@@ -1253,9 +1244,9 @@ void PlotFCN(  TFitter *minimizer,
 		av_w2 = t4sq_12[i]/bin_pop_12[i];
 		sigma_w = av_w2 - av_w*av_w;
 		t4_err_12[i] = fabs(t4_12[i])/sqrt(bin_pop_12[i])*sqrt(1.+(sigma_w/av_w)*(sigma_w/av_w));
-
-		//		cout << "t0_err_12 = " << t0_err_12[i] << "t1_err_12 = " << t1_err_12[i] << "t2_err_12 = " << t2_err_12[i] << "t3_err_12 = " << t3_err_12[i] << "t4_err_12 = " << t4_err_12[i] << endl;
 	}
+
+	// filling moments graphs
 
 	plot_moments(m_12, t0_12, t1_12, t2_12, t3_12, t4_12, t0_err_12, t1_err_12, t2_err_12, t3_err_12, t4_err_12, g0_12_MC, g1_12_MC, g2_12_MC, g3_12_MC, g4_12_MC);
 
@@ -1265,8 +1256,6 @@ void PlotFCN(  TFitter *minimizer,
 	}
 
 	for (int i=0; i<moments_npt; i++) {
-
-		//              cout << "t0[" << i <<"] = " << t0[i] << ", t1[" << i <<"] = " << t1[i] << ", t2[" << i <<"] = " << t2[i] << ", t3[" << i <<"] = " << t3[i] << ", t4[" << i <<"] = " << t4[i] << ", Integral = " << Integral << "bin pop = "<< bin_pop[i] << endl; 
 
 		t0_13[i] = t0_13[i]/Integral_13;
 		t1_13[i] = t1_13[i]/Integral_13;
@@ -1305,8 +1294,9 @@ void PlotFCN(  TFitter *minimizer,
 		sigma_w = av_w2 - av_w*av_w;
 		t4_err_13[i] = fabs(t4_13[i])/sqrt(bin_pop_13[i])*sqrt(1.+(sigma_w/av_w)*(sigma_w/av_w));
 
-		//cout << "t0_err_13 = " << t0_err_13[i] << "t1_err_13 = " << t1_err_13[i] << "t2_err_13 = " << t2_err_13[i] << "t3_err_13 = " << t3_err_13[i] << "t4_err_13 = " << t4_err_13[i] << endl;
 	}
+
+	// filling moments graphs
 
 	plot_moments(m_13, t0_13, t1_13, t2_13, t3_13, t4_13, t0_err_13, t1_err_13, t2_err_13, t3_err_13, t4_err_13, g0_13_MC, g1_13_MC, g2_13_MC, g3_13_MC, g4_13_MC);
 
@@ -1328,7 +1318,6 @@ void PlotFCN(  TFitter *minimizer,
 	S13Hist->Scale( scale );
 	S23Hist->Scale( scale );
 
-
 	set_plot_style_Dalitz();
 
 	TCanvas * c0 = new TCanvas(); 
@@ -1338,6 +1327,8 @@ void PlotFCN(  TFitter *minimizer,
 	TCanvas * c1 = new TCanvas(); 
 	TotalPDFHist_Chi2->Draw("colz");
 	c1->Print("TotalPDFHist_Chi2.pdf"); 
+
+	// Setting histograms collors
 
 	for ( int xxx = 0; xxx < number_of_resonances; ++xxx ) {
 		for ( int yy = 0; yy < 5; ++yy ) {
@@ -1385,8 +1376,6 @@ void PlotFCN(  TFitter *minimizer,
 			histo_sij[ yy ][ xxx ]->Scale( scale );
 
 		}
-
-		//cout << " sij["<<0<<"]["<<xxx<<"] = "<< histo_sij[ 0 ][ xxx ]->Integral() << endl;
 	}
 	for ( int bb = 0; bb < number_of_bkg_components; ++bb ) {
 		for ( int yy = 0; yy < 5; ++yy ) {
@@ -1400,10 +1389,10 @@ void PlotFCN(  TFitter *minimizer,
 	}
 
 
-	string output_histo_file_name = rootfile.substr(0,rootfile.size() - 5);
-	TString PDFName = "Results_PDF_fit/" + output_histo_file_name + ".pdf"; 
-	TString MomentsPDFName = "Results_PDF_fit/" + output_histo_file_name; 
-	output_histo_file_name += ".root";
+	string output_file_name = rootfile.substr(0,rootfile.size() - 4);
+	TString PDFName = "/ucas/devieira/D2KKpi/Results/" + output_file_name + ".pdf"; 
+	TString MomentsPDFName = "/ucas/devieira/D2KKpi/Results/" + output_file_name; 
+	string output_histo_file_name = "/ucas/devieira/D2KKpi/Results/" + output_file_name + ".root";
 
 
 	SlowHist->SetXTitle ( colNameLatex_Slow );
@@ -1531,9 +1520,6 @@ void PlotFCN(  TFitter *minimizer,
 
 	for (int xx = 0; xx < AVAILABLE_RESONANCES; ++xx ) {
 		if(resonances[xx]){
-			//cout << "xx = " << xx <<  ", resonance_number = " << resonance_number << endl;
-			//cout << "number_of_resonances = " << number_of_resonances << endl;
-			//cout << resonant_channel_string_tex[ xx ].c_str() << endl;
 
 			lslo->AddEntry( histo_sij[ 0 ][ resonance_number ], 
 					resonant_channel_string_tex[ xx ].c_str(), 
@@ -1555,7 +1541,6 @@ void PlotFCN(  TFitter *minimizer,
 	}
 	for (int xx = 0; xx < AVAILABLE_BKG_COMPONENTS; ++xx ) {
 		if(bkg_components[xx]){
-			//cout << "xx = " << xx <<  ", bkg_component_number = " << bkg_component_number << endl;
 			lslo->AddEntry( bhisto_sij[ 0 ][ bkg_component_number ], 
 					bkg_component_string[ xx ].c_str(), 
 					"l" );
@@ -1584,21 +1569,21 @@ void PlotFCN(  TFitter *minimizer,
 	SlowHistData->Draw( "E1 same" );
 
 	for( int xx = 0; xx < number_of_resonances; ++xx ){
-		histo_sij[ 0 ][ xx ]->Draw("csame");
+		histo_sij[ 0 ][ xx ]->Draw("HIST C SAME");
 	}
 
 	if(Draw_interf){
 		for (int i = 0; i < number_of_resonances; i++){
 			for (int j = i; j < number_of_resonances; j++){
 				if(j==i)continue;
-				histo_interf_sij[ 0 ][ interf_count ]->Draw("csame");
+				histo_interf_sij[ 0 ][ interf_count ]->Draw("C same");
 				++interf_count;
 			}
 		}
 		interf_count = 0;          
 	}
 	for( int bb0 = 0; bb0 < number_of_bkg_components; ++bb0 ){
-		bhisto_sij[ 0 ][ bb0 ]->Draw( "csame" );
+		bhisto_sij[ 0 ][ bb0 ]->Draw( "HIST C SAME" );
 	}    
 
 
@@ -1621,7 +1606,7 @@ void PlotFCN(  TFitter *minimizer,
 		for (int i = 0; i < number_of_resonances; i++){
 			for (int j = i; j < number_of_resonances; j++){
 				if(j==i)continue;
-				histo_interf_sij[ 1 ][ interf_count ]->Draw("csame");
+				histo_interf_sij[ 1 ][ interf_count ]->Draw("HIST C SAME");
 				++interf_count;
 			}
 		}
@@ -1644,6 +1629,7 @@ void PlotFCN(  TFitter *minimizer,
 	///////////////////////////////////////////////////// Draw S13 and S12 ///////////////////////////////////////////////////////////////
 
 	AccCanv->cd( 1 );
+	pad1->cd();
 	gPad->SetLogy();
 
 	S13Hist->Draw( "HIST C " );
@@ -1682,11 +1668,11 @@ void PlotFCN(  TFitter *minimizer,
 
 	for( int xx = 0; xx < number_of_resonances; ++xx )
 
-		histo_sij[ 2 ][ xx ]->Draw("csame");
+		histo_sij[ 2 ][ xx ]->Draw("HIST C SAME");
 
 	for( int bb0 = 0; bb0 < number_of_bkg_components; ++bb0 )
 
-		bhisto_sij[ 2 ][ bb0 ]->Draw( "csame" );
+		bhisto_sij[ 2 ][ bb0 ]->Draw( "HIST C SAME" );
 
 	//ls12->Draw();
 
@@ -1707,11 +1693,11 @@ void PlotFCN(  TFitter *minimizer,
 
 	for( int xx = 0; xx < number_of_resonances; ++xx )
 
-		histo_sij[ 4 ][ xx ]->Draw("csame");
+		histo_sij[ 4 ][ xx ]->Draw("HIST C SAME");
 
 	for( int bb0 = 0; bb0 < number_of_bkg_components; ++bb0 )
 
-		bhisto_sij[ 4 ][ bb0 ]->Draw( "csame" );
+		bhisto_sij[ 4 ][ bb0 ]->Draw( "HIST C SAME" );
 
 	pad2->cd();
 
@@ -1745,8 +1731,6 @@ void PlotFCN(  TFitter *minimizer,
 			chisq,
 			kolm );
 
-
-	//chi2->GetZaxis()->SetRange(-40,40);
 	chi2->SetMaximum(20);
 	chi2->SetMinimum(-20);
 
@@ -1778,10 +1762,10 @@ void PlotFCN(  TFitter *minimizer,
 	double tChi2 = double(chisq/nDof);
 	AccCanv->Close();
 
-        ofstream myfile;  //file to output the fit result - ofstream : Stream class to write on files
-        myfile.open (oss2.c_str(),ios::app); //ios:app :  append to the end of the file
-        myfile << "chi2 " << tChi2 << endl; 
-        myfile.close();
+	ofstream myfile;  //file to output the fit result - ofstream : Stream class to write on files
+	myfile.open (oss2.c_str(),ios::app); //ios:app :  append to the end of the file
+	myfile << "chi2 " << tChi2 << endl; 
+	myfile.close();
 
 	////////////////////////////////////////////////// End of Draw S23 and Chi2 //////////////////////////////////////////////////////
 
@@ -1837,7 +1821,6 @@ void PlotFCN(  TFitter *minimizer,
 
 	gStyle->SetPadRightMargin(0.1);
 
-	//g0_12_Data->SetLineColor(2);
 	g0_12_Data->SetLineWidth(2);
 	g0_12_Data->SetMarkerColor(1);
 	g0_12_Data->SetMarkerSize(0.5);
@@ -1847,7 +1830,6 @@ void PlotFCN(  TFitter *minimizer,
 	g0_12_Data->GetYaxis()->SetTitleOffset(1.2);
 	g0_12_Data->SetTitle("");
 
-	//g1_12_Data->SetLineColor(2);
 	g1_12_Data->SetLineWidth(2);
 	g1_12_Data->SetMarkerColor(1);
 	g1_12_Data->SetMarkerSize(0.5);
@@ -1857,7 +1839,6 @@ void PlotFCN(  TFitter *minimizer,
 	g1_12_Data->GetYaxis()->SetTitleOffset(1.2);
 	g1_12_Data->SetTitle("");
 
-	//g2_12_Data->SetLineColor(2);
 	g2_12_Data->SetLineWidth(2);
 	g2_12_Data->SetMarkerColor(1);
 	g2_12_Data->SetMarkerSize(0.5);
@@ -1867,7 +1848,6 @@ void PlotFCN(  TFitter *minimizer,
 	g2_12_Data->GetYaxis()->SetTitleOffset(1.2);
 	g2_12_Data->SetTitle("");
 
-	//g3_12_Data->SetLineColor(2);
 	g3_12_Data->SetLineWidth(2);
 	g3_12_Data->SetMarkerColor(1);
 	g3_12_Data->SetMarkerSize(0.5);
@@ -1877,7 +1857,6 @@ void PlotFCN(  TFitter *minimizer,
 	g3_12_Data->GetYaxis()->SetTitleOffset(1.2);
 	g3_12_Data->SetTitle("");
 
-	//g4_12_Data->SetLineColor(2);
 	g4_12_Data->SetLineWidth(2);
 	g4_12_Data->SetMarkerColor(1);
 	g4_12_Data->SetMarkerSize(0.5);
@@ -1887,7 +1866,6 @@ void PlotFCN(  TFitter *minimizer,
 	g4_12_Data->GetYaxis()->SetTitleOffset(1.2);
 	g4_12_Data->SetTitle("");
 
-	//g0_13_Data->SetLineColor(2);
 	g0_13_Data->SetLineWidth(2);
 	g0_13_Data->SetMarkerColor(1);
 	g0_13_Data->SetMarkerSize(0.5);
@@ -1897,7 +1875,6 @@ void PlotFCN(  TFitter *minimizer,
 	g0_13_Data->GetYaxis()->SetTitleOffset(1.2);
 	g0_13_Data->SetTitle("");
 
-	//g1_13_Data->SetLineColor(2);
 	g1_13_Data->SetLineWidth(2);
 	g1_13_Data->SetMarkerColor(1);
 	g1_13_Data->SetMarkerSize(0.5);
@@ -1907,7 +1884,6 @@ void PlotFCN(  TFitter *minimizer,
 	g1_13_Data->GetYaxis()->SetTitleOffset(1.2);
 	g1_13_Data->SetTitle("");
 
-	//g2_13_Data->SetLineColor(2);
 	g2_13_Data->SetLineWidth(2);
 	g2_13_Data->SetMarkerColor(1);
 	g2_13_Data->SetMarkerSize(0.5);
@@ -1917,7 +1893,6 @@ void PlotFCN(  TFitter *minimizer,
 	g2_13_Data->GetYaxis()->SetTitleOffset(1.2);
 	g2_13_Data->SetTitle("");
 
-	//g3_13_Data->SetLineColor(2);
 	g3_13_Data->SetLineWidth(2);
 	g3_13_Data->SetMarkerColor(1);
 	g3_13_Data->SetMarkerSize(0.5);
@@ -1927,7 +1902,6 @@ void PlotFCN(  TFitter *minimizer,
 	g3_13_Data->GetYaxis()->SetTitleOffset(1.2);
 	g3_13_Data->SetTitle("");
 
-	//g4_13_Data->SetLineColor(2);
 	g4_13_Data->SetLineWidth(2);
 	g4_13_Data->SetMarkerColor(1);
 	g4_13_Data->SetMarkerSize(0.5);
@@ -1937,111 +1911,60 @@ void PlotFCN(  TFitter *minimizer,
 	g4_13_Data->GetYaxis()->SetTitleOffset(1.2);
 	g4_13_Data->SetTitle("");
 
-	//g0_12_MC->SetLineColor(3);
-	//g0_12_MC->SetLineWidth(2);
-	//g0_12_MC->SetMarkerColor(1);
-	//g0_12_MC->SetMarkerSize(1);
-	//g0_12_MC->SetMarkerStyle(2);
 	g0_12_MC->SetFillColor(38);
 	g0_12_MC->GetXaxis()->SetTitle("s_{K#pi} [GeV/c^{2}");
 	g0_12_MC->GetYaxis()->SetTitle("t_{0}^{0} (arbitrary units)");
 	g0_12_MC->GetYaxis()->SetTitleOffset(1.2);
 	g0_12_MC->SetTitle("");
 
-	//g1_12_MC->SetLineColor(3);
-	//g1_12_MC->SetLineWidth(2);
-	//g1_12_MC->SetMarkerColor(1);
-	//g1_12_MC->SetMarkerSize(1);
-	//g1_12_MC->SetMarkerStyle(2);
 	g1_12_MC->SetFillColor(38);
 	g1_12_MC->GetXaxis()->SetTitle("s_{K#pi} [GeV/c^{2}");
 	g1_12_MC->GetYaxis()->SetTitle("t_{1}^{0} (arbitrary units)");
 	g1_12_MC->GetYaxis()->SetTitleOffset(1.2);
 	g1_12_MC->SetTitle("");
 
-	//g2_12_MC->SetLineColor(3);
-	//g2_12_MC->SetLineWidth(2);
-	//g2_12_MC->SetMarkerColor(1);
-	//g2_12_MC->SetMarkerSize(1);
-	//g2_12_MC->SetMarkerStyle(2);
 	g2_12_MC->SetFillColor(38);
 	g2_12_MC->GetXaxis()->SetTitle("s_{K#pi} [GeV/c^{2}");
 	g2_12_MC->GetYaxis()->SetTitle("t_{2}^{0} (arbitrary units)");
 	g2_12_MC->GetYaxis()->SetTitleOffset(1.2);
 	g2_12_MC->SetTitle("");
 
-	//g3_12_MC->SetLineColor(3);
-	//g3_12_MC->SetLineWidth(2);
-	//g3_12_MC->SetMarkerColor(1);
-	//g3_12_MC->SetMarkerSize(1);
-	//g3_12_MC->SetMarkerStyle(2);
 	g3_12_MC->SetFillColor(38);
 	g3_12_MC->GetXaxis()->SetTitle("s_{K#pi} [GeV/c^{2}");
 	g3_12_MC->GetYaxis()->SetTitle("t_{3}^{0} (arbitrary units)");
 	g3_12_MC->GetYaxis()->SetTitleOffset(1.2);
 	g3_12_MC->SetTitle("");
 
-	//g4_12_MC->SetLineColor(3);
-	//g4_12_MC->SetLineWidth(2);
-	//g4_12_MC->SetMarkerColor(1);
-	//g4_12_MC->SetMarkerSize(1);
-	//g4_12_MC->SetMarkerStyle(2);
 	g4_12_MC->SetFillColor(38);
 	g4_12_MC->GetXaxis()->SetTitle("s_{K#pi} [GeV/c^{2}");
 	g4_12_MC->GetYaxis()->SetTitle("t_{4}^{0} (arbitrary units)");
 	g4_12_MC->GetYaxis()->SetTitleOffset(1.2);
 	g4_12_MC->SetTitle("");
 
-	//g0_13_MC->SetLineColor(3);
-	//g0_13_MC->SetLineWidth(2);
-	//g0_13_MC->SetMarkerColor(1);
-	//g0_13_MC->SetMarkerSize(1);
-	//g0_13_MC->SetMarkerStyle(2);
 	g0_13_MC->SetFillColor(38);
 	g0_13_MC->GetXaxis()->SetTitle("s_{K#pi} [GeV/c^{2}");
 	g0_13_MC->GetYaxis()->SetTitle("t_{0}^{0} (arbitrary units)");
 	g0_13_MC->GetYaxis()->SetTitleOffset(1.2);
 	g0_13_MC->SetTitle("");
 
-	//g1_13_MC->SetLineColor(3);
-	//g1_13_MC->SetLineWidth(2);
-	//g1_13_MC->SetMarkerColor(1);
-	//g1_13_MC->SetMarkerSize(1);
-	//g1_13_MC->SetMarkerStyle(2);
 	g1_13_MC->SetFillColor(38);
 	g1_13_MC->GetXaxis()->SetTitle("s_{K#pi} [GeV/c^{2}");
 	g1_13_MC->GetYaxis()->SetTitle("t_{1}^{0} (arbitrary units)");
 	g1_13_MC->GetYaxis()->SetTitleOffset(1.2);
 	g1_13_MC->SetTitle("");
 
-	//g2_13_MC->SetLineColor(3);
-	//g2_13_MC->SetLineWidth(2);
-	//g2_13_MC->SetMarkerColor(1);
-	//g2_13_MC->SetMarkerSize(1);
-	//g2_13_MC->SetMarkerStyle(2);
 	g2_13_MC->SetFillColor(38);
 	g2_13_MC->GetXaxis()->SetTitle("s_{K#pi} [GeV/c^{2}");
 	g2_13_MC->GetYaxis()->SetTitle("t_{2}^{0} (arbitrary units)");
 	g2_13_MC->GetYaxis()->SetTitleOffset(1.2);
 	g2_13_MC->SetTitle("");
 
-	//g3_13_MC->SetLineColor(3);
-	//g3_13_MC->SetLineWidth(2);
-	//g3_13_MC->SetMarkerColor(1);
-	//g3_13_MC->SetMarkerSize(1);
-	//g3_13_MC->SetMarkerStyle(2);
 	g3_13_MC->SetFillColor(38);
 	g3_13_MC->GetXaxis()->SetTitle("s_{K#pi} [GeV/c^{2}");
 	g3_13_MC->GetYaxis()->SetTitle("t_{3}^{0} (arbitrary units)");
 	g3_13_MC->GetYaxis()->SetTitleOffset(1.2);
 	g3_13_MC->SetTitle("");
 
-	//g4_13_MC->SetLineColor(3);
-	//g4_13_MC->SetLineWidth(2);
-	//g4_13_MC->SetMarkerColor(1);
-	//g4_13_MC->SetMarkerSize(1);
-	//g4_13_MC->SetMarkerStyle(2);
-	g4_13_MC->SetFillColor(38);
 	g4_13_MC->GetXaxis()->SetTitle("s_{K#pi} [GeV/c^{2}");
 	g4_13_MC->GetYaxis()->SetTitle("t_{4}^{0} (arbitrary units)");
 	g4_13_MC->GetYaxis()->SetTitleOffset(1.2);

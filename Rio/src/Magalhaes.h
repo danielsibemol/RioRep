@@ -27,13 +27,12 @@ double PartialWidth (double &sab, double &M0, double &cd, double &cm){ // Largur
 }
 
 double ReL (double &sab){ // Parte Real do loop
-	double prelimiar,limiar,Sigma,L0, mK2,mpi2, M;
+	double prelimiar,limiar,Sigma,L0, mK2,mpi2;
 	limiar = pow((mK +mpi),2);
 	prelimiar = pow( (mK - mpi),2 );
 	mK2=mK*mK;
 	mpi2= mpi*mpi;
 	Sigma= mK2 +mpi2;
-	M=1.0;//escala para manter adimencional  a princÌpio 1 GeV.
 	L0=1.0 +((mK2+mpi2)/(mpi2-mK2))*log(mpi/mK) -  ((mpi2-mK2)/sab)*log(mpi/mK); // NOvo Valor subtraido em L(0).
 	
 	if (sab< prelimiar)
