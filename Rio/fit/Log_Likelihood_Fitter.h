@@ -324,29 +324,9 @@ void Log_Likelihood_Fitter(string input_txt_file_name, int sample_number)
 	PWA_output_file.close();
 
 
-
-	UseAcceptance=kFALSE;
-	vector<vector<TComplex> > NormForFractions;
-
-	ComplexSigNorm(final_state, is_gaussian, mass_min, mass_max, bkg_par1, bkg_par2, number_of_resonances, number_of_bkg_components, resonances, bkg_components, last_iteration_masses, last_iteration_widths, last_iteration_res_extra_pars, resonances_calc_norm, NormForFractions, bkg_normalization, KK_bin_limit, pwa_coefs, pwa_coefs_prime);
-
-
-
-
-
-	Fractions(minimizer, real_and_imaginary,NormForFractions,number_of_resonances, fix_parameter_index, included_resonant_channel_string, input_ntuple_name, oss2.str() ,texpars);
-
-
-	cout<<" UseAcceptance before "<<UseAcceptance<<endl;
-
-	UseAcceptance=kTRUE;
-
-
-	bool drawPlot = kTRUE;
-	cout << "S12.size() = " << S12.size() << endl;
-
 	cout << " (no plot) fitting time of sample " << sample_number <<" = "<< endl;
 	clock.Print("u");
+	bool drawPlot = kTRUE;
 	if( drawPlot ) 
 		PlotFCN(	minimizer, 
 				final_state, 
@@ -365,6 +345,24 @@ void Log_Likelihood_Fitter(string input_txt_file_name, int sample_number)
 				S23, 
 				input_txt_file_name,
 				oss2.str() );
+
+	UseAcceptance=kFALSE;
+	vector<vector<TComplex> > NormForFractions;
+
+	ComplexSigNorm(final_state, is_gaussian, mass_min, mass_max, bkg_par1, bkg_par2, number_of_resonances, number_of_bkg_components, resonances, bkg_components, last_iteration_masses, last_iteration_widths, last_iteration_res_extra_pars, resonances_calc_norm, NormForFractions, bkg_normalization, KK_bin_limit, pwa_coefs, pwa_coefs_prime);
+
+
+
+
+
+	Fractions(minimizer, real_and_imaginary,NormForFractions,number_of_resonances, fix_parameter_index, included_resonant_channel_string, input_ntuple_name, oss2.str() ,texpars);
+
+
+	cout<<" UseAcceptance before "<<UseAcceptance<<endl;
+
+
+	cout << "S12.size() = " << S12.size() << endl;
+
 
 	clock.Stop();
 	cout << "full fitting time of sample " << sample_number << endl;

@@ -701,6 +701,8 @@ void PlotFCN(  TFitter *minimizer,
 	cout << "-----------------------------------------------------------------------------------------------------------------------------------" << endl;
 	cout << endl;
 
+	cout << "processing data events" << endl;
+
 	for ( Long64_t jentry = 0; jentry < nentries; ++jentry ) {
 
 		s12 = S12[jentry];
@@ -742,7 +744,8 @@ void PlotFCN(  TFitter *minimizer,
 			if((s12 > s12min)&&(s12 < s12max)){
 
 				// acceptance for this event       
-				acc = acceptance(s12,s13);
+				if(UseAcceptance) acc = acceptance(s12,s13);
+                                else acc = 1;
 
 				// find in which m12 bin this event belongs to;
 				if(s12 < s12_limits[0]) bin=0;
@@ -788,7 +791,8 @@ void PlotFCN(  TFitter *minimizer,
 			if((s13 > s13min)&&(s13 < s13max)){
 
 				// acceptance for this event       
-				acc = acceptance(s12,s13);
+				if(UseAcceptance) acc = acceptance(s12,s13);
+                                else acc = 1;
 
 				// find in which m13 bin this event belongs to;
 				if(s13 < s13_limits[0]) bin=0;
@@ -814,7 +818,6 @@ void PlotFCN(  TFitter *minimizer,
 				t4sq_13[bin] = t4sq_13[bin] + w*PL[4]*w*PL[4];
 			}
 		}
-		if(jentry%1000==0 && (jentry) != 0)  cout << "PlotFCN - Processing Data events - " << double(jentry)*100.0/double(nentries) << "%    \r" << flush;
 	}
 
 	for (int i=0; i<moments_npt; i++) {
@@ -972,6 +975,8 @@ void PlotFCN(  TFitter *minimizer,
 	cout << "-----------------------------------------------------------------------------------------------------------------------------------" << endl;
 	cout << endl;
 
+	cout << "processing MC events" << endl; 
+
 	double totalPdf = 0;
 	double L_s = 0;
 	for ( Long64_t jentry = 0; jentry < nevts; ++jentry ) {
@@ -1031,7 +1036,8 @@ void PlotFCN(  TFitter *minimizer,
 			if((s12 > s12min)&&(s12 < s12max)){
 
 				// acceptance for this event       
-				acc = acceptance(s12,s13);
+				if(UseAcceptance) acc = acceptance(s12,s13);
+                                else acc = 1;
 
 				// find in which m12 bin this event belongs to;
 				if(s12 < s12_limits[0]) bin=0;
@@ -1076,7 +1082,8 @@ void PlotFCN(  TFitter *minimizer,
 			if((s13 > s13min)&&(s13 < s13max)){
 
 				// acceptance for this event       
-				acc = acceptance(s12,s13);
+				if(UseAcceptance) acc = acceptance(s12,s13);
+                                else acc = 1;
 
 				// find in which m13 bin this event belongs to;
 				if(s13 < s13_limits[0]) bin=0;
@@ -1721,7 +1728,7 @@ void PlotFCN(  TFitter *minimizer,
 	   nDof, 
 	   chisq,
 	   kolm );
-	 */
+	   */
 
 	TH2Poly *chi2 = CalculateChiSq_adaptive( TotalPDFHist_Chi2,
 			TotalToyHist_Chi2,
