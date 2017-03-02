@@ -10,7 +10,7 @@ void ComplexSigNorm(int final_state, bool is_gaussian, double Mass_min, double M
 		int number_of_bkg_components, vector<int> resonances, vector<int> bkg_components, vector<double> res_masses, vector<double> res_widths,
 		vector< vector<double> > res_extra_pars,bool resonances_calc_norm[], vector< vector<TComplex> > &sig_normalization,
 		vector<double> &bkg_normalization, vector<double> KK_bin_limits, vector<TComplex> pwa_coefs, vector<TComplex> pwa_coefs_prime){
-	double M, m1, m2, m3, s13min, s13max, thin_res_border_max;
+	double M, m1, m2, m3, s13min, s13max;
 	int sig_index1 = 0, sig_index2 = 0, bkg_index = 0;
 	string SigRe = "SigRe", SigIm = "SigIm", Bkg = "Bkg";
 	double *points = new double[number_of_points];
@@ -99,11 +99,6 @@ void ComplexSigNorm(int final_state, bool is_gaussian, double Mass_min, double M
 							TwoDimSigImIntObject.SetValues(OneDimSigIntObject, number_of_points, points, weights, SigIm, final_state, M, integral_masses, integral_widths,
 									integral_res_extra_pars, KK_bin_limits, pwa_coefs, pwa_coefs_prime, j, k);
 
-							if( final_state != 0 && fabs(integral_widths[0]) < 0.02){
-								thin_res_border_max = pow(integral_masses[0] + 3*integral_widths[0],2);
-							}else if (final_state != 0 && fabs(integral_widths[1]) < 0.02){
-								thin_res_border_max = pow(integral_masses[1] + 3*integral_widths[1],2); 
-							}
 							TF1 TwoDimSigReIntFunction("TwoDimSigReIntFunction", TwoDimSigReIntObject, s13min, s13max, 0);
 							TF1 TwoDimSigImIntFunction("TwoDimSigImIntFunction", TwoDimSigImIntObject, s13min, s13max, 0);
 
@@ -111,15 +106,8 @@ void ComplexSigNorm(int final_state, bool is_gaussian, double Mass_min, double M
 							if (sig_index1 > sig_index2) {
 								sig_normalization[sig_index1][sig_index2] = sig_normalization[sig_index2][sig_index1].Conjugate(sig_normalization[sig_index2][sig_index1]);
 							}else{
-								if (final_state != 0 && (fabs(integral_widths[0]) < 0.02 || fabs(integral_widths[1]) < 0.02)){							
-									sig_normalization[sig_index1][sig_index2](TwoDimSigReIntFunction.IntegralFast(number_of_points, points, weights, s13min, thin_res_border_max) + 
-											TwoDimSigReIntFunction.IntegralFast(number_of_points, points, weights, thin_res_border_max, s13max),
-											TwoDimSigImIntFunction.IntegralFast(number_of_points, points, weights, s13min, thin_res_border_max) + 
-											TwoDimSigImIntFunction.IntegralFast(number_of_points, points, weights, thin_res_border_max, s13max));
-								} else {
 									sig_normalization[sig_index1][sig_index2](TwoDimSigReIntFunction.IntegralFast(number_of_points, points, weights, s13min,s13max),
 											TwoDimSigImIntFunction.IntegralFast(number_of_points, points, weights, s13min,s13max));
-								}	
 							}
 
 
