@@ -245,7 +245,7 @@ myfiletex2<<" & \\bf Fraction (\%)"<<" \\\\"<<endl
 for(int i=0; i<n_res; i++){
 	amp = sqrt(pow(texpars[8*i],2) + pow(texpars[8*i+2],2));
 	amp_err = sqrt(pow(2*texpars[8*i]*texpars[8*i+1],2) + pow(2*texpars[8*i+2]*texpars[8*i+3],2));
-	phs = atan2(texpars[8*i],texpars[8*i+2]);
+	phs = atan2(texpars[8*i+2],texpars[8*i]);
 	phs_err = sqrt(pow((1/texpars[8*i+2])*(1/(1+pow(texpars[8*i]/texpars[8*i+2],2)))*texpars[8*i+1],2) 
 			+ pow((texpars[8*i]/pow(texpars[8*i+2],2))*(1/(1+pow(texpars[8*i]/texpars[8*i+2],2)))*texpars[8*i+3],2));
 	//cout << "amp = " << amp << ", amp_err = " << amp_err << ", phs = " << phs << ", phs_err = " << phs_err << endl; 
